@@ -4,12 +4,12 @@
 
 - **Milestone**: kiro-integration
 - **Phase**: 4 (Command Modernization)
-- **Status**: Planning complete - Ready for execution
+- **Status**: ✅ Complete - Ready for Phase 5
 - **Last Updated**: 2026-01-20
 
 ## Context
 
-Phases 1-3 successfully implemented:
+Phases 1-4 successfully implemented:
 
 **Phase 1 - Hooks Foundation**:
 - ✅ Hook infrastructure
@@ -30,18 +30,21 @@ Phases 1-3 successfully implemented:
 - ✅ Complete documentation and integration
 
 **Phase 4 - Command Modernization**:
-- ✅ Research complete (slash command format, migration strategy)
-- ✅ Plans created (3 waves: core, management, utilities)
-- Plan 4.1: Core workflow commands (6)
-- Plan 4.2: Management commands (10)
-- Plan 4.3: Session & utility commands (9) + documentation
+- ✅ All 25 GSD commands migrated to `.claude/commands/`
+- ✅ Subdirectory organization (phase/, milestone/, session/, util/)
+- ✅ Argument hints for autocomplete
+- ✅ Bash pre-execution for context
+- ✅ File references with @ syntax
+- ✅ Workflow compatibility maintained
+- ✅ Complete documentation (README.md, SYSTEM.md)
 
 ## Next Steps
 
-1. Execute `/execute 4` to implement all Phase 4 plans
-2. Create 25 slash commands in `.claude/commands/`
-3. Test command integration
-4. Proceed to Phase 5 (Documentation & Testing)
+1. Plan Phase 5 (Documentation & Testing) with `/plan 5`
+2. Update all documentation with Kiro features
+3. Create usage examples
+4. Test end-to-end integration
+5. Create migration guide
 
 ## Decisions Made
 
@@ -53,6 +56,7 @@ Phases 1-3 successfully implemented:
 - Haiku para exploración, Sonnet para research, dontAsk para verificación autónoma
 - Slash commands referencian workflows existentes para portabilidad
 - Organización en subdirectorios (phase/, milestone/, session/, util/)
+- Comandos project-level en `.claude/commands/` (compartidos via git)
 
 ## Open Questions
 

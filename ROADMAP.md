@@ -5,13 +5,13 @@
 
 ## Must-Haves
 
-- [ ] Sistema de Hooks para auto-validación (PostToolUse) en fase /execute
-- [ ] Skills ejecutables que reemplacen templates estáticos
-- [ ] Subagentes para operaciones que consumen mucho contexto (/map, /research-phase)
-- [ ] Hooks PreToolUse para enforcement de Planning Lock
-- [ ] Documentación actualizada con ejemplos de Kiro
-- [ ] Scripts de validación embebidos en Skills
-- [ ] Migración de comandos GSD a formato Kiro-compatible
+- [x] Sistema de Hooks para auto-validación (PostToolUse) en fase /execute
+- [x] Skills ejecutables que reemplacen templates estáticos
+- [x] Subagentes para operaciones que consumen mucho contexto (/map, /research-phase)
+- [x] Hooks PreToolUse para enforcement de Planning Lock
+- [x] Documentación actualizada con ejemplos de Kiro
+- [x] Scripts de validación embebidos en Skills
+- [x] Migración de comandos GSD a formato Kiro-compatible
 
 ## Phases
 
@@ -52,7 +52,7 @@
 - Documentación de cuándo usar subagentes vs main conversation
 
 ### Phase 4: Command Modernization
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Actualizar comandos GSD a formato Slash Commands de Kiro
 
 **Key Deliverables:**

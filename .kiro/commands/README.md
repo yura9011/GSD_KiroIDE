@@ -67,9 +67,47 @@ Both approaches work identically.
 - **File references**: @ syntax includes file contents
 - **Subagent integration**: Commands reference appropriate subagents
 
+## Directory Structure
+
+```
+.kiro/commands/
+├── new-project.md
+├── map.md
+├── plan.md
+├── execute.md
+├── verify.md
+├── progress.md
+├── README.md
+├── phase/
+│   ├── discuss.md
+│   ├── research.md
+│   ├── add.md
+│   ├── insert.md
+│   ├── remove.md
+│   └── list-assumptions.md
+├── milestone/
+│   ├── new.md
+│   ├── complete.md
+│   ├── audit.md
+│   └── plan-gaps.md
+├── session/
+│   ├── pause.md
+│   ├── resume.md
+│   ├── add-todo.md
+│   └── check-todos.md
+└── util/
+    ├── debug.md
+    ├── help.md
+    ├── update.md
+    ├── whats-new.md
+    └── web-search.md
+```
+
 ## See Also
 
 - `.gsd/workflows/` - Complete workflow definitions
 - `.gsd/COMMANDS.md` - Command reference
 - `.gsd/SYSTEM.md` - System documentation
 - `.kiro/agents/` - Subagent definitions
+- `.kiro/skills/` - Skill definitions
+- `.kiro/settings/hooks.json` - Hook configurations
