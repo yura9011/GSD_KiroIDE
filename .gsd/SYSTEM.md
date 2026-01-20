@@ -189,6 +189,23 @@ For high-context operations, GSD provides specialized subagents:
 
 See `.kiro/agents/README.md` for complete documentation.
 
+## Kiro Slash Commands
+
+GSD commands are available as Kiro slash commands in `.claude/commands/`:
+
+**Core Workflow**: `/new-project`, `/map`, `/plan`, `/execute`, `/verify`, `/progress`
+**Phase Management**: `/discuss-phase`, `/research-phase`, `/add-phase`, etc.
+**Milestone Management**: `/new-milestone`, `/complete-milestone`, `/audit-milestone`, etc.
+**Session Management**: `/pause`, `/resume`, `/add-todo`, `/check-todos`
+**Utilities**: `/debug`, `/help`, `/update`, `/whats-new`, `/web-search`
+
+All slash commands reference workflows in `.gsd/workflows/` for compatibility.
+
+**With Kiro**: Use slash commands for argument hints and bash pre-execution
+**Without Kiro**: Use workflows directly
+
+See `.claude/commands/README.md` for complete documentation.
+
 ## Quality Gates
 
 Before marking phase complete:
