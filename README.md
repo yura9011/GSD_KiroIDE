@@ -4,7 +4,7 @@ A portable, spec-driven development methodology adapted for Kiro IDE.
 
 ## About
 
-Get Shit Done (GSD) is a context engineering framework that makes AI coding reliable and consistent. This is a complete adaptation for Kiro IDE with full support for Kiro-specific features including hooks, skills, subagents, and slash commands.
+Get Shit Done (GSD) is a context engineering framework created by [glittercowboy](https://github.com/glittercowboy) that makes AI coding reliable and consistent. This is an adaptation of the [original GSD framework](https://github.com/glittercowboy/get-shit-done) for Kiro IDE, with full support for Kiro-specific features including hooks, skills, subagents, and slash commands.
 
 ## Features
 
@@ -228,14 +228,20 @@ MIT License - See LICENSE file for details
 
 ## Credits
 
-Based on [Get Shit Done](https://github.com/glittercowboy/get-shit-done) by glittercowboy.
+This project is based on [Get Shit Done](https://github.com/glittercowboy/get-shit-done) by [glittercowboy](https://github.com/glittercowboy).
 
-Adapted for Kiro IDE with additional features:
+GSD is a context engineering framework created by glittercowboy that makes AI coding reliable and consistent. The original framework was designed for Claude Code and has been adapted here for Kiro IDE.
+
+### What This Adaptation Adds
+
+This Kiro IDE adaptation extends the original GSD framework with:
 - Hooks for auto-validation and Planning Lock enforcement
 - Skills with embedded validation scripts
 - Subagents with context fork pattern (99% context savings)
 - 25 slash commands with argument hints and pre-execution
 - Complete Kiro IDE integration while maintaining portability
+
+All core GSD concepts, workflows, and methodology are from the original work by glittercowboy.
 
 ## Related Projects
 
