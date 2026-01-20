@@ -4,13 +4,14 @@ A portable, spec-driven development methodology adapted for Kiro IDE.
 
 ## About
 
-Get Shit Done (GSD) is a context engineering framework that makes AI coding reliable and consistent. This is a complete adaptation for Kiro IDE with full support for Kiro-specific features.
+Get Shit Done (GSD) is a context engineering framework that makes AI coding reliable and consistent. This is a complete adaptation for Kiro IDE with full support for Kiro-specific features including hooks, skills, subagents, and slash commands.
 
 ## Features
 
-- 25 workflow commands for structured development
-- 26 document templates for consistency
-- Automatic command detection in Kiro
+- 25 slash commands for structured development
+- Hooks for auto-validation and rule enforcement
+- Skills for executable templates with validation
+- Subagents for context-efficient operations
 - Integration with Kiro's getDiagnostics and context-gatherer
 - Portable across all AI coding assistants
 - Complete validation scripts
@@ -127,8 +128,12 @@ Your Project/
 │   └── examples/        # Usage examples
 │
 ├── .kiro/               # Kiro integration
-│   └── steering/
-│       └── gsd-system.md
+│   ├── settings/
+│   │   └── hooks.json   # Hook configurations
+│   ├── scripts/         # Hook validation scripts
+│   ├── skills/          # Executable skills
+│   ├── agents/          # Custom subagents
+│   └── commands/        # 25 slash commands
 │
 ├── .planning/           # Phase work
 ├── .summaries/          # Results
@@ -137,14 +142,30 @@ Your Project/
 
 ## Kiro-Specific Features
 
-### Context Gatherer Integration
-For `/map`, Kiro uses the context-gatherer sub-agent to analyze your codebase efficiently.
+### Hooks
+- PreToolUse hook for Planning Lock enforcement
+- PostToolUse hook for automatic syntax validation
+- Prevents code generation before SPEC.md is finalized
+- Auto-validates code after file edits
 
-### Diagnostics Integration
-For verification, Kiro uses `getDiagnostics` instead of running linters manually.
+### Skills
+- spec-writer: Validates SPEC.md structure programmatically
+- roadmap-builder: Ensures ROADMAP.md completeness
+- commit-helper: Generates atomic commit messages
+- Progressive disclosure pattern for minimal context usage
 
-### Parallel Execution
-When executing independent tasks, Kiro can use sub-agents or parallel tool calls.
+### Subagents
+- map-explorer: Codebase analysis with 99% context savings
+- research-agent: Technical research with web access
+- verify-agent: Autonomous verification in dontAsk mode
+- Context fork pattern isolates high-volume operations
+
+### Slash Commands
+- All 25 GSD commands available as native Kiro slash commands
+- Organized in subdirectories (phase/, milestone/, session/, util/)
+- Argument hints for autocomplete
+- Bash pre-execution for context gathering
+- File references with @ syntax
 
 ## Portability
 
@@ -210,10 +231,11 @@ MIT License - See LICENSE file for details
 Based on [Get Shit Done](https://github.com/glittercowboy/get-shit-done) by glittercowboy.
 
 Adapted for Kiro IDE with additional features:
-- Kiro-specific integrations (getDiagnostics, context-gatherer)
-- Enhanced steering file for automatic command detection
-- Complete workflow definitions for all 25 commands
-- Validation scripts for structure verification
+- Hooks for auto-validation and Planning Lock enforcement
+- Skills with embedded validation scripts
+- Subagents with context fork pattern (99% context savings)
+- 25 slash commands with argument hints and pre-execution
+- Complete Kiro IDE integration while maintaining portability
 
 ## Related Projects
 
