@@ -150,6 +150,11 @@ Git commands work identically on all platforms.
 - Use `getDiagnostics` instead of running linters manually
 - Leverage sub-agents (context-gatherer) for codebase analysis
 - Use hooks for automation when appropriate
+- **Use custom subagents for high-context operations**:
+  - `map-explorer`: Codebase analysis with context fork (99% context savings)
+  - `research-agent`: Technical research with web access
+  - `verify-agent`: Autonomous verification checks
+  - See `.kiro/agents/README.md` for details
 
 ### For Claude Code
 - Use sub-agent orchestration for parallel work
@@ -160,6 +165,29 @@ Git commands work identically on all platforms.
 - Follow Antigravity-specific patterns
 - Use available tools for file operations
 - Adapt to platform capabilities
+
+## Kiro Subagents
+
+For high-context operations, GSD provides specialized subagents:
+
+- **map-explorer**: Codebase analysis (context:fork, read-only, Haiku model)
+  - Use for `/map` command
+  - Analyzes architecture, tech stack, patterns, technical debt
+  - Returns concise summary, keeps file reads in forked context
+
+- **research-agent**: Technical research (context:fork, Sonnet model)
+  - Use for `/research-phase` command
+  - Searches documentation, compares alternatives
+  - Returns structured recommendations
+
+- **verify-agent**: Verification checks (context:fork, Haiku model, dontAsk mode)
+  - Use for `/verify` command
+  - Runs tests, linters, validation autonomously
+  - Returns pass/fail with evidence
+
+**Context Fork Pattern**: Subagents run in separate context windows. Only summaries return to main conversation, saving 99% of context.
+
+See `.kiro/agents/README.md` for complete documentation.
 
 ## Quality Gates
 
