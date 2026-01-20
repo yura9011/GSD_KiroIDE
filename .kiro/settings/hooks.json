@@ -12,7 +12,18 @@
         ]
       }
     ],
-    "PostToolUse": [],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .kiro/scripts/validate_syntax.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "SessionStart": []
   }
 }
