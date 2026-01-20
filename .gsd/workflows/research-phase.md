@@ -49,6 +49,20 @@ What needs to be understood before planning?
 
 ## 3. Conduct Research
 
+**With Kiro**: Use research-agent subagent for context-efficient research:
+
+```
+Use the research-agent subagent to research [topic/question]
+```
+
+The subagent will:
+- Search documentation and web resources in forked context
+- Compare alternatives and analyze trade-offs
+- Return structured recommendations
+- Keep main conversation clean (99% context savings)
+
+**Without Kiro**: Manually research using methods below.
+
 Based on discovery level:
 
 **Level 1:** Quick verification

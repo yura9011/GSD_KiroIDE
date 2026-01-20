@@ -62,6 +62,20 @@ Display banner:
 
 ## 2. Analyze Project Structure
 
+**With Kiro**: Use map-explorer subagent for context-efficient analysis:
+
+```
+Use the map-explorer subagent to analyze this codebase
+```
+
+The subagent will:
+- Explore codebase in forked context (saves 99% of main conversation context)
+- Analyze architecture, tech stack, and patterns
+- Identify technical debt and conventions
+- Return concise summary for ARCHITECTURE.md
+
+**Without Kiro**: Manually explore using commands below.
+
 ### 2a. Directory Analysis
 
 **PowerShell:**

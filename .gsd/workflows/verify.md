@@ -59,6 +59,26 @@ From the phase definition, identify **must-haves** — requirements that MUST be
 
 ## 3. Verify Each Must-Have
 
+**With Kiro**: Use verify-agent subagent for autonomous verification:
+
+```
+Use the verify-agent subagent to verify phase {N}
+```
+
+The subagent will:
+- Run tests, linters, and validation checks in forked context
+- Collect concrete evidence (command output)
+- Validate each requirement against implementation
+- Return structured verification report
+- Keep verbose test output out of main conversation
+
+For parallel verification of multiple components:
+```
+Use verify-agent to verify [component 1] and [component 2] in parallel
+```
+
+**Without Kiro**: Manually verify using methods below.
+
 For each must-have:
 
 ### 3a. Determine Verification Method
