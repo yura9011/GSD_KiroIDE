@@ -51,22 +51,39 @@ function Test-Code {
     
     $codeErrors = 0
     
+    Write-Host "Checking for validation tools..."
+    
     # Tool availability detection
     $hasNode = Get-Command node -ErrorAction SilentlyContinue
     $hasPython = Get-Command python -ErrorAction SilentlyContinue
     $hasEslint = $false
     $hasPylint = Get-Command pylint -ErrorAction SilentlyContinue
     
+    Write-Host "  - Node.js: $(if ($hasNode) { '✓ Found' } else { '✗ Not found' })"
+    Write-Host "  - Python: $(if ($hasPython) { '✓ Found' } else { '✗ Not found' })"
+    
     try {
         $null = npx eslint --version 2>$null
-        if ($LASTEXITCODE -eq 0) { $hasEslint = $true }
-    } catch { }
+        if ($LASTEXITCODE -eq 0) { 
+            $hasEslint = $true
+            Write-Host "  - ESLint: ✓ Found"
+        } else {
+            Write-Host "  - ESLint: ✗ Not found"
+        }
+    } catch { 
+        Write-Host "  - ESLint: ✗ Not found"
+    }
+    
+    Write-Host "  - PyLint: $(if ($hasPylint) { '✓ Found' } else { '✗ Not found' })"
+    Write-Host ""
     
     # JavaScript/TypeScript validation
+    Write-Host "Scanning for JavaScript/TypeScript files..."
     $jsFiles = Get-ChildItem -Recurse -Include *.js,*.jsx,*.ts,*.tsx | Where-Object { $_.FullName -notmatch "node_modules" } | Select-Object -First 20
     if ($jsFiles) {
-        Write-Host "Validating JavaScript/TypeScript files..."
+        Write-Host "Found $($jsFiles.Count) JS/TS files to validate..."
         if ($hasEslint) {
+            Write-Host "Running ESLint validation..."
             try {
                 npx eslint . --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore 2>$null
                 if ($LASTEXITCODE -eq 0) {
@@ -81,30 +98,38 @@ function Test-Code {
             }
         } elseif ($hasNode) {
             Write-Host "ESLint not available, using basic Node.js syntax check..."
+            $current = 0
             foreach ($file in $jsFiles) {
+                $current++
+                Write-Host "  [$current/$($jsFiles.Count)] Checking $($file.Name)..."
                 try {
                     node -c $file.FullName 2>$null
                     if ($LASTEXITCODE -eq 0) {
-                        Write-Host "${Green}✓${Reset} $($file.Name)"
+                        Write-Host "    ${Green}✓${Reset} OK"
                     } else {
-                        Write-Host "${Red}✗${Reset} $($file.Name) - syntax error"
+                        Write-Host "    ${Red}✗${Reset} Syntax error"
                         $codeErrors++
                     }
                 } catch {
-                    Write-Host "${Red}✗${Reset} $($file.Name) - syntax error"
+                    Write-Host "    ${Red}✗${Reset} Syntax error"
                     $codeErrors++
                 }
             }
         } else {
-            Write-Host "${Yellow}⚠${Reset} No JavaScript validation tools available"
+            Write-Host "${Yellow}⚠${Reset} No JavaScript validation tools available (skipping)"
         }
+    } else {
+        Write-Host "No JavaScript/TypeScript files found (skipping)"
     }
+    Write-Host ""
     
     # Python validation
+    Write-Host "Scanning for Python files..."
     $pyFiles = Get-ChildItem -Recurse -Include *.py | Where-Object { $_.FullName -notmatch "__pycache__" } | Select-Object -First 20
     if ($pyFiles) {
-        Write-Host "Validating Python files..."
+        Write-Host "Found $($pyFiles.Count) Python files to validate..."
         if ($hasPylint) {
+            Write-Host "Running PyLint validation..."
             try {
                 $pyFilePaths = $pyFiles | ForEach-Object { $_.FullName }
                 pylint @pyFilePaths 2>$null
@@ -120,39 +145,52 @@ function Test-Code {
             }
         } elseif ($hasPython) {
             Write-Host "PyLint not available, using basic Python syntax check..."
+            $current = 0
             foreach ($file in $pyFiles) {
+                $current++
+                Write-Host "  [$current/$($pyFiles.Count)] Checking $($file.Name)..."
                 try {
                     python -m py_compile $file.FullName 2>$null
                     if ($LASTEXITCODE -eq 0) {
-                        Write-Host "${Green}✓${Reset} $($file.Name)"
+                        Write-Host "    ${Green}✓${Reset} OK"
                     } else {
-                        Write-Host "${Red}✗${Reset} $($file.Name) - syntax error"
+                        Write-Host "    ${Red}✗${Reset} Syntax error"
                         $codeErrors++
                     }
                 } catch {
-                    Write-Host "${Red}✗${Reset} $($file.Name) - syntax error"
+                    Write-Host "    ${Red}✗${Reset} Syntax error"
                     $codeErrors++
                 }
             }
         } else {
-            Write-Host "${Yellow}⚠${Reset} No Python validation tools available"
+            Write-Host "${Yellow}⚠${Reset} No Python validation tools available (skipping)"
         }
+    } else {
+        Write-Host "No Python files found (skipping)"
     }
+    Write-Host ""
     
     # PowerShell script validation
+    Write-Host "Scanning for PowerShell scripts..."
     $ps1Files = Get-ChildItem -Recurse -Include *.ps1 | Select-Object -First 10
     if ($ps1Files) {
-        Write-Host "Validating PowerShell scripts..."
+        Write-Host "Found $($ps1Files.Count) PowerShell scripts to validate..."
+        $current = 0
         foreach ($file in $ps1Files) {
+            $current++
+            Write-Host "  [$current/$($ps1Files.Count)] Checking $($file.Name)..."
             try {
                 $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $file.FullName -Raw), [ref]$null)
-                Write-Host "${Green}✓${Reset} $($file.Name)"
+                Write-Host "    ${Green}✓${Reset} OK"
             } catch {
-                Write-Host "${Red}✗${Reset} $($file.Name) - syntax error"
+                Write-Host "    ${Red}✗${Reset} Syntax error"
                 $codeErrors++
             }
         }
+    } else {
+        Write-Host "No PowerShell scripts found (skipping)"
     }
+    Write-Host ""
     
     $script:TotalErrors += $codeErrors
     Write-Host ""
@@ -169,20 +207,26 @@ function Test-Workflows {
     $workflowsChecked = 0
     
     if (-not (Test-Path ".gsd/workflows")) {
-        Write-Host "${Yellow}⚠${Reset} No .gsd/workflows directory found"
+        Write-Host "${Yellow}⚠${Reset} No .gsd/workflows directory found (skipping)"
         return
     }
     
+    Write-Host "Scanning for workflow files..."
     $workflowFiles = Get-ChildItem ".gsd/workflows/*.md"
+    Write-Host "Found $($workflowFiles.Count) workflow files to validate..."
+    
+    $current = 0
     foreach ($file in $workflowFiles) {
+        $current++
         $workflowsChecked++
         $filename = $file.Name
+        Write-Host "  [$current/$($workflowFiles.Count)] Checking $filename..."
         $hasErrors = $false
         
         # Check for frontmatter
         $firstLine = Get-Content $file.FullName -First 1
         if ($firstLine -notmatch "^---") {
-            Write-Host "${Red}✗${Reset} $filename`: Missing frontmatter"
+            Write-Host "    ${Red}✗${Reset} Missing frontmatter"
             $workflowErrors++
             $hasErrors = $true
         }
@@ -190,17 +234,18 @@ function Test-Workflows {
         # Check for description
         $content = Get-Content $file.FullName -Raw
         if ($content -notmatch "description:") {
-            Write-Host "${Red}✗${Reset} $filename`: Missing description in frontmatter"
+            Write-Host "    ${Red}✗${Reset} Missing description in frontmatter"
             $workflowErrors++
             $hasErrors = $true
         }
         
         if (-not $hasErrors) {
-            Write-Host "${Green}✓${Reset} $filename"
+            Write-Host "    ${Green}✓${Reset} OK"
         }
     }
     
-    Write-Host "Workflows checked: $workflowsChecked, Errors: $workflowErrors"
+    Write-Host ""
+    Write-Host "Summary: $workflowsChecked workflows checked, $workflowErrors errors"
     $script:TotalErrors += $workflowErrors
     Write-Host ""
 }
