@@ -49,6 +49,11 @@
 
 ### Recently Completed
 
+- [x] **Workflow Validation Fixes** (2026-01-21)
+  - Fixed: Missing frontmatter in COMMANDS.md and quick.md
+  - Result: All 27 workflows now pass validation
+  - Committed and pushed to repository
+
 - [x] **Update Scripts** (2026-01-21)
   - Created: `update.bat` and `update.sh`
   - Purpose: Update GSD framework in existing projects
