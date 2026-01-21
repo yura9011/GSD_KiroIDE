@@ -23,7 +23,39 @@ GSD (Get Shit Done) is a framework for building software with AI assistants. It 
 
 ## Installation
 
-### Option 1: Clone Repository (Recommended)
+### Option 1: Automated Installer (Recommended)
+
+**Windows:**
+```cmd
+# Clone GSD Universal
+git clone https://github.com/yura9011/GSD-universal.git
+cd GSD-universal
+
+# Run installer
+install.bat
+```
+
+**Linux/Mac:**
+```bash
+# Clone GSD Universal
+git clone https://github.com/yura9011/GSD-universal.git
+cd GSD-universal
+
+# Make installer executable and run
+chmod +x install.sh
+./install.sh
+```
+
+The installer will:
+1. Ask for your project directory path
+2. Copy all GSD files (.gsd/, scripts/, loop files, etc.)
+3. Optionally copy documentation
+4. Set up proper permissions
+5. Show you next steps
+
+**Time**: 1-2 minutes
+
+### Option 2: Manual Installation
 
 ```bash
 # Clone GSD
@@ -39,7 +71,23 @@ git add .
 git commit -m "Initial commit with GSD"
 ```
 
-### Option 2: Download and Copy
+### Option 2: Manual Installation
+
+```bash
+# Clone GSD
+git clone https://github.com/yura9011/GSD-universal.git my-project
+cd my-project
+
+# Remove GSD git history
+rm -rf .git
+
+# Initialize your project
+git init
+git add .
+git commit -m "Initial commit with GSD"
+```
+
+### Option 3: Add to Existing Project
 
 1. Download GSD from GitHub
 2. Copy `.gsd/` folder to your project

@@ -69,6 +69,43 @@ Get Shit Done (GSD) is a context engineering framework created by [glittercowboy
 
 ### Installation
 
+**Option 1: Automated Installer (Recommended)**
+
+**Windows:**
+```cmd
+# Clone GSD Universal
+git clone https://github.com/yura9011/GSD-universal.git
+cd GSD-universal
+
+# Run installer
+install.bat
+
+# Follow prompts to install to your project
+```
+
+**Linux/Mac:**
+```bash
+# Clone GSD Universal
+git clone https://github.com/yura9011/GSD-universal.git
+cd GSD-universal
+
+# Make installer executable
+chmod +x install.sh
+
+# Run installer
+./install.sh
+
+# Follow prompts to install to your project
+```
+
+The installer will:
+- Ask for your project directory
+- Copy all necessary GSD files
+- Set up proper permissions
+- Provide next steps
+
+**Option 2: Manual Installation**
+
 1. Clone this repository:
 ```bash
 git clone https://github.com/yura9011/GSD-universal.git
