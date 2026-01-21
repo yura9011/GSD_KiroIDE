@@ -1,3 +1,7 @@
+---
+description: Ad-hoc tasks without full planning - for bug fixes, small features, and one-off tasks
+---
+
 # Quick Mode - Ad-hoc Tasks Without Full Planning
 
 **Use for**: Bug fixes, small features, config changes, one-off tasks that don't need full phase planning.

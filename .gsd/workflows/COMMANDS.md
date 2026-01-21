@@ -1,3 +1,7 @@
+---
+description: Reference guide for all GSD workflow commands
+---
+
 # GSD Commands Reference
 
 All commands work via natural language in Kiro chat.
