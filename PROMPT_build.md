@@ -1,31 +1,209 @@
-0a. Study `specs/*` with up to 500 parallel Sonnet subagents to learn the application specifications.
-0b. Study @IMPLEMENTATION_PLAN.md.
-0c. For reference, the application source code is in the current directory.
+# Universal Ralph Loop - Build Mode
 
-1. Your task is to implement functionality per the specifications using parallel subagents. Follow @IMPLEMENTATION_PLAN.md and choose the most important item to address. Before making changes, search the codebase (don't assume not implemented) using Sonnet subagents. You may use up to 500 parallel Sonnet subagents for searches/reads and only 1 Sonnet subagent for build/tests. Use Opus subagents when complex reasoning is needed (debugging, architectural decisions).
+## Context
 
-2. After implementing functionality or resolving problems, run the tests for that unit of code that was improved. If functionality is missing then it's your job to add it as per the application specifications. Ultrathink.
+Read these files to understand the project:
+- `specs/*` - Project requirements and specifications
+- `IMPLEMENTATION_PLAN.md` - Current tasks and priorities
+- `AGENTS.md` - Operational procedures and commands
+- `.gsd/SYSTEM.md` - GSD framework documentation
+- Source code in current directory
 
-3. When you discover issues, immediately update @IMPLEMENTATION_PLAN.md with your findings using a subagent. When resolved, update and remove the item.
+## Iteration Protocol
 
-4. When the tests pass, update @IMPLEMENTATION_PLAN.md, then `git add -A` then `git commit` with a message describing the changes. After the commit, `git push`.
+Follow this protocol for each iteration:
 
-99999. Important: When authoring documentation, capture the why — tests and implementation importance.
-999999. Important: Single sources of truth, no migrations/adapters. If tests unrelated to your work fail, resolve them as part of the increment.
-9999999. As soon as there are no build or test errors create a git tag. If there are no git tags start at 0.0.0 and increment patch by 1 for example 0.0.1 if 0.0.0 does not exist.
-99999999. You may add extra logging if required to debug issues.
-999999999. Keep @IMPLEMENTATION_PLAN.md current with learnings using a subagent — future work depends on this to avoid duplicating efforts. Update especially after finishing your turn.
-9999999999. When you learn something new about how to run the application, update @AGENTS.md using a subagent but keep it brief. For example if you run commands multiple times before learning the correct command then that file should be updated.
-99999999999. For any bugs you notice, resolve them or document them in @IMPLEMENTATION_PLAN.md using a subagent even if it is unrelated to the current piece of work.
-999999999999. Implement functionality completely. Placeholders and stubs waste efforts and time redoing the same work.
-9999999999999. When @IMPLEMENTATION_PLAN.md becomes large periodically clean out the items that are completed from the file using a subagent.
-99999999999999. If you find inconsistencies in the specs/* then use an Opus 4.5 subagent with 'ultrathink' requested to update the specs.
-999999999999999. IMPORTANT: Keep @AGENTS.md operational only — status updates and progress notes belong in `IMPLEMENTATION_PLAN.md`. A bloated AGENTS.md pollutes every future loop's context.
+### 1. Choose Task
+- Read `IMPLEMENTATION_PLAN.md`
+- Select the highest priority incomplete task
+- Understand task requirements and context
 
-GSD INTEGRATION GUARDRAILS:
+### 2. Search Codebase
+- Search for existing implementation
+- Don't assume functionality is missing
+- Review related code and patterns
+- Understand current architecture
 
-99999999999999999. Before marking any task complete, run the GSD validation system: `./scripts/validate-all.sh` (Linux/Mac) or `./scripts/validate-all.ps1` (Windows). If validation fails, fix issues before continuing.
-999999999999999999. Follow GSD atomic commit format: `feat(phase-N): description` for all commits.
-9999999999999999999. Use Kiro's getDiagnostics for syntax checking of code files before committing.
-99999999999999999999. Maintain cross-platform compatibility - all scripts must work on Windows (PowerShell) and Linux/Mac (Bash).
-999999999999999999999. CRITICAL: This is a GSD framework enhancement project. All work must integrate with existing GSD structure while following Ralph Loop patterns exactly.
+### 3. Implement or Fix
+- Implement the functionality per specifications
+- Fix bugs and issues discovered
+- Follow existing code patterns
+- Maintain cross-platform compatibility
+- Write complete implementations (no placeholders/stubs)
+
+### 4. Run Validation
+**Before marking complete:**
+```bash
+# Linux/Mac
+./scripts/validate.sh --all
+
+# Windows
+./scripts/validate.ps1 -All
+```
+
+Validation must pass:
+- No syntax errors
+- Code style compliance
+- Cross-platform compatibility
+- All checks green
+
+### 5. Run Tests
+- Run tests for affected code
+- All tests must pass
+- Fix any test failures
+- Add tests for new functionality
+
+### 6. Update State
+- Update `IMPLEMENTATION_PLAN.md` with progress
+- Move completed tasks to "Completed" section
+- Document any discovered issues
+- Keep `AGENTS.md` brief (operational only)
+
+### 7. Commit Changes
+```bash
+git add -A
+git commit -m "feat(phase-N): description of changes"
+git push
+```
+
+Use atomic commits:
+- One commit per logical change
+- Clear, descriptive messages
+- Format: `feat(phase-N): description`
+
+### 8. Continue or Stop
+- Check if more tasks remain
+- Verify iteration quality
+- Continue to next task or stop
+
+## Validation (Backpressure)
+
+**Critical**: Validation must pass before continuing.
+
+**What validation checks:**
+- Syntax errors (language-specific linters)
+- Code style and formatting
+- GSD workflow structure
+- Cross-platform compatibility
+- Test execution
+
+**If validation fails:**
+1. Read error messages carefully
+2. Fix all issues
+3. Re-run validation
+4. Don't proceed until green
+
+## State Management
+
+**IMPLEMENTATION_PLAN.md**:
+- Tracks all tasks
+- Priority levels (High/Medium/Low)
+- Task status (checkbox format: `- [ ]` or `- [x]`)
+- Discovered issues section
+- Completed tasks archive
+
+**AGENTS.md**:
+- Operational procedures only
+- Validation commands
+- Build/test commands
+- Keep under 60 lines
+- Status updates go in IMPLEMENTATION_PLAN.md
+
+**Git History**:
+- Each iteration creates commits
+- Atomic commits per task
+- Provides rollback capability
+- Documents progress
+
+## Quality Standards
+
+### Code Quality
+- Follow existing patterns
+- Maintain consistency
+- No placeholders or stubs
+- Complete implementations
+- Proper error handling
+
+### Testing
+- Write tests for new functionality
+- Fix broken tests immediately
+- Don't skip test failures
+- Maintain test coverage
+
+### Documentation
+- Update docs when behavior changes
+- Capture the "why" not just "what"
+- Keep AGENTS.md operational only
+- Detailed notes go in IMPLEMENTATION_PLAN.md
+
+### Cross-Platform
+- All scripts work on Windows (PowerShell) and Linux/Mac (Bash)
+- Test on both platforms when possible
+- Use cross-platform commands
+- Document platform-specific issues
+
+## Debugging
+
+**If tests fail repeatedly:**
+1. Analyze failure patterns
+2. Check for root cause
+3. Fix underlying issue
+4. Don't just patch symptoms
+
+**If stuck on a task:**
+1. Document what was tried in IMPLEMENTATION_PLAN.md
+2. Note blockers and questions
+3. Move to next task if possible
+4. Return with fresh context
+
+**If validation always fails:**
+1. Check validation scripts are correct
+2. Review AGENTS.md for proper commands
+3. Verify cross-platform compatibility
+4. Fix validation issues first
+
+## Manual Mode
+
+If automation is unavailable:
+
+1. **Read Context Files**
+   - Open specs/, IMPLEMENTATION_PLAN.md, AGENTS.md
+   - Understand current state
+
+2. **Follow Protocol Manually**
+   - Choose task
+   - Search codebase
+   - Implement changes
+   - Run validation commands in terminal
+   - Run tests manually
+
+3. **Update Files by Hand**
+   - Edit IMPLEMENTATION_PLAN.md
+   - Update AGENTS.md if needed
+   - Create git commits manually
+
+4. **Verify Work**
+   - Run all validation commands
+   - Check tests pass
+   - Review changes before committing
+
+## Important Reminders
+
+- **Single source of truth**: No migrations or adapters
+- **Fix unrelated failures**: If tests fail, fix them
+- **Keep AGENTS.md brief**: Status goes in IMPLEMENTATION_PLAN.md
+- **Complete implementations**: No placeholders or stubs
+- **Atomic commits**: One logical change per commit
+- **Fresh context**: Each iteration starts clean
+- **Validation first**: Don't skip backpressure
+
+## GSD Integration
+
+This prompt integrates with GSD framework:
+- Follows GSD atomic commit format
+- Uses GSD validation system
+- Maintains GSD file structure
+- Respects GSD workflows
+- Cross-platform by design
+
+**See**: `.gsd/protocols/ralph-loop.md` for complete protocol specification.

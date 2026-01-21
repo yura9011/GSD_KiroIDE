@@ -1,59 +1,61 @@
 #!/bin/bash
 
-# loop.sh - Ralph Loop autonomous execution engine
-# Based on Geoffrey Huntley's Ralph Loop implementation
-# https://github.com/ghuntley/how-to-ralph-wiggum
+# ralph.sh - Universal Ralph Loop coordinator
+# Works with ANY AI assistant (no CLI dependencies)
 
 set -euo pipefail
 
-# Default configuration
+# Configuration
 MODE="build"
 MAX_ITERATIONS=50
-SLEEP_DURATION=2
-AI_CLI="kiro"  # Default to Kiro, can be changed to claude, openai, etc.
-VERBOSE=false
+MANUAL_MODE=false
+DRY_RUN=false
 
-# Colors for output
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# Usage function
+# Usage
 show_help() {
     cat << EOF
-Ralph Loop - Autonomous Execution Engine
+Universal Ralph Loop - AI Coordination Protocol
 
 USAGE:
-    ./loop.sh [OPTIONS] [MODE]
+    ./ralph.sh [MODE] [OPTIONS]
 
 MODES:
-    build    Execute PROMPT_build.md (default)
-    plan     Execute PROMPT_plan.md
+    build       Execute PROMPT_build.md (default)
+    plan        Execute PROMPT_plan.md
 
 OPTIONS:
-    -h, --help              Show this help message
-    -i, --iterations NUM    Maximum iterations (default: 50)
-    -s, --sleep NUM         Sleep duration between iterations (default: 2)
-    -c, --cli COMMAND       AI CLI command (default: kiro)
-    -v, --verbose           Verbose output
-    --dry-run              Validate setup without executing
+    --manual    Manual mode (just show prompts, no automation)
+    --dry-run   Validate setup without executing
+    -i NUM      Maximum iterations (default: 50)
+    -h, --help  Show this help
 
 EXAMPLES:
-    ./loop.sh                    # Build mode, default settings (kiro)
-    ./loop.sh plan               # Planning mode
-    ./loop.sh -i 10 build        # Build mode, max 10 iterations
-    ./loop.sh -c claude build    # Use Claude CLI instead of Kiro
-    ./loop.sh --dry-run          # Validate setup
+    ./ralph.sh build              # Build mode, interactive
+    ./ralph.sh plan               # Planning mode
+    ./ralph.sh --manual           # Manual mode (no automation)
+    ./ralph.sh --dry-run          # Validate setup
 
-The Ralph Loop executes AI prompts autonomously until completion.
-Each iteration starts with fresh context for optimal performance.
+UNIVERSAL PROTOCOL:
+Ralph works with ANY AI assistant:
+- ChatGPT web interface
+- Claude web interface
+- Kiro IDE
+- VS Code + Copilot
+- Terminal + any AI
+
+See .gsd/protocols/ralph-loop.md for complete protocol.
 
 EOF
 }
 
-# Logging functions
+# Logging
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -70,7 +72,7 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Validation function
+# Validate setup
 validate_setup() {
     local errors=0
     
@@ -83,13 +85,13 @@ validate_setup() {
         ((errors++))
     fi
     
-    if [[ ! -f "AGENTS.md" ]]; then
-        log_error "Missing AGENTS.md operational manual"
+    if [[ ! -f "IMPLEMENTATION_PLAN.md" ]]; then
+        log_error "Missing IMPLEMENTATION_PLAN.md"
         ((errors++))
     fi
     
-    if [[ ! -f "IMPLEMENTATION_PLAN.md" ]]; then
-        log_error "Missing IMPLEMENTATION_PLAN.md task tracker"
+    if [[ ! -f "AGENTS.md" ]]; then
+        log_error "Missing AGENTS.md"
         ((errors++))
     fi
     
@@ -98,25 +100,17 @@ validate_setup() {
         ((errors++))
     fi
     
-    # Check validation scripts
-    if [[ ! -f "scripts/validate-all.sh" ]]; then
-        log_error "Missing GSD validation script: scripts/validate-all.sh"
-        ((errors++))
-    else
-        log_info "Found GSD validation script: scripts/validate-all.sh"
-    fi
-    
-    # Check AI CLI
-    if ! command -v "$AI_CLI" &> /dev/null; then
-        log_error "AI CLI not found: $AI_CLI"
-        log_info "Install AI CLI (claude, kiro, openai, etc.) or specify different CLI with --cli option"
-        ((errors++))
-    fi
-    
     # Check git
     if ! command -v git &> /dev/null; then
         log_error "Git not found - required for Ralph Loop"
         ((errors++))
+    fi
+    
+    # Check validation scripts (optional but recommended)
+    if [[ -f "scripts/validate.sh" ]]; then
+        log_info "Found validation script: scripts/validate.sh"
+    else
+        log_warning "Validation script not found (optional)"
     fi
     
     if [[ $errors -eq 0 ]]; then
@@ -128,12 +122,44 @@ validate_setup() {
     fi
 }
 
+# Show prompt to user
+show_prompt() {
+    local prompt_file="$1"
+    local iteration="$2"
+    
+    clear
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo " RALPH LOOP - Iteration $iteration/$MAX_ITERATIONS"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "Mode: $MODE"
+    echo "Prompt file: $prompt_file"
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    cat "$prompt_file"
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+}
+
+# Wait for user to execute AI
+wait_for_user() {
+    echo ""
+    echo "INSTRUCTIONS:"
+    echo "1. Copy the prompt above to your AI assistant"
+    echo "2. Execute the prompt with your AI (ChatGPT, Claude, Kiro, etc.)"
+    echo "3. Let the AI complete its work"
+    echo "4. Press ENTER when done to continue..."
+    echo ""
+    read -r
+}
+
 # Run validation
 run_validation() {
-    log_info "Running GSD validation (backpressure)..."
+    log_info "Running validation (backpressure)..."
     
-    if [[ -x "scripts/validate-all.sh" ]]; then
-        if ./scripts/validate-all.sh; then
+    if [[ -x "./scripts/validate.sh" ]]; then
+        if ./scripts/validate.sh --all; then
             log_success "Validation passed"
             return 0
         else
@@ -141,98 +167,134 @@ run_validation() {
             return 1
         fi
     else
-        log_warning "Validation script not executable, skipping"
+        log_warning "Validation script not found, skipping"
         return 0
     fi
 }
 
-# Main execution loop
-run_ralph_loop() {
-    local prompt_file="PROMPT_${MODE}.md"
-    local iteration=1
-    
-    log_info "Starting Ralph Loop in $MODE mode"
-    log_info "Prompt file: $prompt_file"
-    log_info "Max iterations: $MAX_ITERATIONS"
-    log_info "AI CLI: $AI_CLI"
-    
-    while [[ $iteration -le $MAX_ITERATIONS ]]; do
-        echo
-        log_info "--- Iteration $iteration/$MAX_ITERATIONS ---"
-        
-        # Execute AI with prompt
-        log_info "Executing AI iteration..."
-        if [[ "$VERBOSE" == "true" ]]; then
-            cat "$prompt_file" | "$AI_CLI" -p --dangerously-skip-permissions
-        else
-            cat "$prompt_file" | "$AI_CLI" -p --dangerously-skip-permissions > /dev/null 2>&1
-        fi
-        
-        local ai_exit_code=$?
-        
-        if [[ $ai_exit_code -ne 0 ]]; then
-            log_error "AI execution failed with exit code $ai_exit_code"
-            log_info "Continuing to next iteration..."
-        else
-            log_success "AI iteration completed"
-            
-            # Run validation (backpressure)
-            if run_validation; then
-                log_success "Iteration $iteration validated successfully"
-                
-                # Auto git push
-                if git push origin "$(git branch --show-current)" 2>/dev/null; then
-                    log_success "Changes pushed to remote"
-                else
-                    log_warning "Failed to push changes (continuing anyway)"
-                fi
-            else
-                log_warning "Validation failed, continuing to next iteration"
-            fi
-        fi
-        
-        # Sleep between iterations
-        if [[ $iteration -lt $MAX_ITERATIONS ]]; then
-            log_info "Sleeping for ${SLEEP_DURATION}s before next iteration..."
-            sleep "$SLEEP_DURATION"
-        fi
-        
-        ((iteration++))
-    done
-    
-    log_info "Ralph Loop completed after $MAX_ITERATIONS iterations"
+# Check for git changes
+check_git_changes() {
+    if [[ -n $(git status --porcelain) ]]; then
+        return 0  # Changes exist
+    else
+        return 1  # No changes
+    fi
 }
 
-# Parse command line arguments
+# Prompt for commit
+prompt_commit() {
+    echo ""
+    log_info "Changes detected in git"
+    echo "Do you want to commit these changes? (y/n)"
+    read -r response
+    
+    if [[ "$response" == "y" ]]; then
+        log_info "Creating commit..."
+        git add -A
+        
+        echo "Enter commit message (or press ENTER for default):"
+        read -r commit_msg
+        
+        if [[ -z "$commit_msg" ]]; then
+            commit_msg="feat(ralph): iteration $1 complete"
+        fi
+        
+        git commit -m "$commit_msg"
+        
+        echo "Push to remote? (y/n)"
+        read -r push_response
+        
+        if [[ "$push_response" == "y" ]]; then
+            git push
+            log_success "Changes pushed to remote"
+        fi
+        
+        log_success "Changes committed"
+    else
+        log_info "Skipping commit"
+    fi
+}
+
+# Main Ralph Loop
+run_ralph_loop() {
+    local prompt_file="PROMPT_${MODE}.md"
+    
+    log_info "Starting Universal Ralph Loop"
+    log_info "Mode: $MODE"
+    log_info "Max iterations: $MAX_ITERATIONS"
+    log_info "Manual mode: $MANUAL_MODE"
+    echo ""
+    
+    # Create session log directory
+    mkdir -p .ralph
+    local session_log=".ralph/session-$(date +%Y%m%d-%H%M%S).log"
+    log_info "Session log: $session_log"
+    echo ""
+    
+    for ((iteration=1; iteration<=MAX_ITERATIONS; iteration++)); do
+        # Log iteration start
+        echo "=== Iteration $iteration started at $(date) ===" >> "$session_log"
+        
+        # Show prompt
+        show_prompt "$prompt_file" "$iteration"
+        
+        # Wait for user to execute AI
+        wait_for_user
+        
+        # Run validation
+        if run_validation; then
+            echo "Validation: PASS" >> "$session_log"
+        else
+            echo "Validation: FAIL" >> "$session_log"
+            log_warning "Validation failed, but continuing..."
+        fi
+        
+        # Check for git changes
+        if check_git_changes; then
+            prompt_commit "$iteration"
+        else
+            log_info "No changes detected"
+        fi
+        
+        # Ask to continue
+        echo ""
+        echo "Continue to next iteration? (y/n)"
+        read -r response
+        
+        if [[ "$response" != "y" ]]; then
+            log_info "Stopping Ralph Loop at iteration $iteration"
+            break
+        fi
+        
+        echo ""
+    done
+    
+    log_success "Ralph Loop completed"
+    log_info "Session log: $session_log"
+}
+
+# Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -h|--help)
-            show_help
-            exit 0
-            ;;
-        -i|--iterations)
-            MAX_ITERATIONS="$2"
-            shift 2
-            ;;
-        -s|--sleep)
-            SLEEP_DURATION="$2"
-            shift 2
-            ;;
-        -c|--cli)
-            AI_CLI="$2"
-            shift 2
-            ;;
-        -v|--verbose)
-            VERBOSE=true
-            shift
-            ;;
-        --dry-run)
-            validate_setup
-            exit $?
-            ;;
         build|plan)
             MODE="$1"
             shift
+            ;;
+        --manual)
+            MANUAL_MODE=true
+            shift
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        -i)
+            MAX_ITERATIONS="$2"
+            shift 2
+            ;;
+        -h|--help)
+            show_help
+            exit 0
             ;;
         *)
             log_error "Unknown option: $1"
@@ -242,12 +304,18 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Validate setup before starting
+# Validate setup
 if ! validate_setup; then
     exit 1
 fi
 
-# Run the Ralph Loop
+# Handle dry-run
+if [[ "$DRY_RUN" == "true" ]]; then
+    log_success "Dry-run complete - setup is valid"
+    exit 0
+fi
+
+# Run Ralph Loop
 run_ralph_loop
 
-log_success "Ralph Loop execution complete"
+log_success "Universal Ralph Loop execution complete"

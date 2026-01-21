@@ -1,55 +1,51 @@
-# loop.ps1 - Ralph Loop autonomous execution engine (PowerShell)
-# Based on Geoffrey Huntley's Ralph Loop implementation
-# https://github.com/ghuntley/how-to-ralph-wiggum
+# ralph.ps1 - Universal Ralph Loop coordinator (PowerShell)
+# Works with ANY AI assistant (no CLI dependencies)
 
 param(
     [string]$Mode = "build",
     [int]$Iterations = 50,
-    [int]$Sleep = 2,
-    [string]$CLI = "kiro",  # Default to Kiro, can be changed to claude, openai, etc.
-    [switch]$Verbose,
-    [switch]$Help,
-    [switch]$DryRun
+    [switch]$Manual,
+    [switch]$DryRun,
+    [switch]$Help
 )
 
-# Error handling
 $ErrorActionPreference = "Stop"
 
-# Usage function
+# Usage
 function Show-Help {
     Write-Host @"
-Ralph Loop - Autonomous Execution Engine
+Universal Ralph Loop - AI Coordination Protocol
 
 USAGE:
-    .\loop.ps1 [OPTIONS] [MODE]
-
-MODES:
-    build    Execute PROMPT_build.md (default)
-    plan     Execute PROMPT_plan.md
+    .\ralph.ps1 [OPTIONS]
 
 OPTIONS:
-    -Mode MODE              Execution mode (build|plan)
-    -Iterations NUM         Maximum iterations (default: 50)
-    -Sleep NUM              Sleep duration between iterations (default: 2)
-    -CLI COMMAND            AI CLI command (default: kiro)
-    -Verbose                Verbose output
-    -Help                   Show this help message
-    -DryRun                 Validate setup without executing
+    -Mode MODE          Execution mode (build|plan) [default: build]
+    -Iterations NUM     Maximum iterations [default: 50]
+    -Manual             Manual mode (just show prompts, no automation)
+    -DryRun             Validate setup without executing
+    -Help               Show this help
 
 EXAMPLES:
-    .\loop.ps1                           # Build mode, default settings (kiro)
-    .\loop.ps1 -Mode plan                # Planning mode
-    .\loop.ps1 -Iterations 10 -Mode build   # Build mode, max 10 iterations
-    .\loop.ps1 -CLI claude -Mode build   # Use Claude CLI instead of Kiro
-    .\loop.ps1 -DryRun                   # Validate setup
+    .\ralph.ps1                      # Build mode, interactive
+    .\ralph.ps1 -Mode plan           # Planning mode
+    .\ralph.ps1 -Manual              # Manual mode (no automation)
+    .\ralph.ps1 -DryRun              # Validate setup
 
-The Ralph Loop executes AI prompts autonomously until completion.
-Each iteration starts with fresh context for optimal performance.
+UNIVERSAL PROTOCOL:
+Ralph works with ANY AI assistant:
+- ChatGPT web interface
+- Claude web interface
+- Kiro IDE
+- VS Code + Copilot
+- Terminal + any AI
+
+See .gsd/protocols/ralph-loop.md for complete protocol.
 
 "@
 }
 
-# Logging functions
+# Logging
 function Write-Info {
     param([string]$Message)
     Write-Host "[INFO] $Message" -ForegroundColor Blue
@@ -65,12 +61,12 @@ function Write-Warning {
     Write-Host "[WARNING] $Message" -ForegroundColor Yellow
 }
 
-function Write-Error {
+function Write-ErrorMsg {
     param([string]$Message)
     Write-Host "[ERROR] $Message" -ForegroundColor Red
 }
 
-# Validation function
+# Validate setup
 function Test-RalphSetup {
     $errors = 0
     
@@ -79,41 +75,22 @@ function Test-RalphSetup {
     # Check required files
     $promptFile = "PROMPT_$Mode.md"
     if (-not (Test-Path $promptFile)) {
-        Write-Error "Missing prompt file: $promptFile"
-        $errors++
-    }
-    
-    if (-not (Test-Path "AGENTS.md")) {
-        Write-Error "Missing AGENTS.md operational manual"
+        Write-ErrorMsg "Missing prompt file: $promptFile"
         $errors++
     }
     
     if (-not (Test-Path "IMPLEMENTATION_PLAN.md")) {
-        Write-Error "Missing IMPLEMENTATION_PLAN.md task tracker"
+        Write-ErrorMsg "Missing IMPLEMENTATION_PLAN.md"
+        $errors++
+    }
+    
+    if (-not (Test-Path "AGENTS.md")) {
+        Write-ErrorMsg "Missing AGENTS.md"
         $errors++
     }
     
     if (-not (Test-Path "specs" -PathType Container)) {
-        Write-Error "Missing specs/ directory"
-        $errors++
-    }
-    
-    # Check validation scripts
-    if (-not (Test-Path "scripts/validate-all.ps1")) {
-        Write-Error "Missing GSD validation script: scripts/validate-all.ps1"
-        $errors++
-    }
-    else {
-        Write-Info "Found GSD validation script: scripts/validate-all.ps1"
-    }
-    
-    # Check AI CLI
-    try {
-        Get-Command $CLI -ErrorAction Stop | Out-Null
-    }
-    catch {
-        Write-Error "AI CLI not found: $CLI"
-        Write-Info "Install AI CLI (claude, kiro, openai, etc.) or specify different CLI with -CLI option"
+        Write-ErrorMsg "Missing specs/ directory"
         $errors++
     }
     
@@ -122,8 +99,16 @@ function Test-RalphSetup {
         Get-Command git -ErrorAction Stop | Out-Null
     }
     catch {
-        Write-Error "Git not found - required for Ralph Loop"
+        Write-ErrorMsg "Git not found - required for Ralph Loop"
         $errors++
+    }
+    
+    # Check validation scripts (optional)
+    if (Test-Path "scripts/validate.ps1") {
+        Write-Info "Found validation script: scripts/validate.ps1"
+    }
+    else {
+        Write-Warning "Validation script not found (optional)"
     }
     
     if ($errors -eq 0) {
@@ -131,23 +116,57 @@ function Test-RalphSetup {
         return $true
     }
     else {
-        Write-Error "Ralph Loop setup validation failed with $errors errors"
+        Write-ErrorMsg "Ralph Loop setup validation failed with $errors errors"
         return $false
     }
 }
 
+# Show prompt to user
+function Show-Prompt {
+    param(
+        [string]$PromptFile,
+        [int]$Iteration
+    )
+    
+    Clear-Host
+    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host " RALPH LOOP - Iteration $Iteration/$Iterations"
+    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host ""
+    Write-Host "Mode: $Mode"
+    Write-Host "Prompt file: $PromptFile"
+    Write-Host ""
+    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host ""
+    Get-Content $PromptFile | Write-Host
+    Write-Host ""
+    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+}
+
+# Wait for user to execute AI
+function Wait-ForUser {
+    Write-Host ""
+    Write-Host "INSTRUCTIONS:"
+    Write-Host "1. Copy the prompt above to your AI assistant"
+    Write-Host "2. Execute the prompt with your AI (ChatGPT, Claude, Kiro, etc.)"
+    Write-Host "3. Let the AI complete its work"
+    Write-Host "4. Press ENTER when done to continue..."
+    Write-Host ""
+    Read-Host
+}
+
 # Run validation
 function Invoke-Validation {
-    Write-Info "Running GSD validation (backpressure)..."
+    Write-Info "Running validation (backpressure)..."
     
-    if (Test-Path "scripts/validate-all.ps1") {
+    if (Test-Path "scripts/validate.ps1") {
         try {
-            & "scripts/validate-all.ps1"
+            & "scripts/validate.ps1" -All
             Write-Success "Validation passed"
             return $true
         }
         catch {
-            Write-Error "Validation failed: $($_.Exception.Message)"
+            Write-ErrorMsg "Validation failed"
             return $false
         }
     }
@@ -157,62 +176,103 @@ function Invoke-Validation {
     }
 }
 
-# Main execution loop
+# Check for git changes
+function Test-GitChanges {
+    $status = git status --porcelain
+    return ($status.Length -gt 0)
+}
+
+# Prompt for commit
+function Invoke-CommitPrompt {
+    param([int]$Iteration)
+    
+    Write-Host ""
+    Write-Info "Changes detected in git"
+    $response = Read-Host "Do you want to commit these changes? (y/n)"
+    
+    if ($response -eq "y") {
+        Write-Info "Creating commit..."
+        git add -A
+        
+        $commitMsg = Read-Host "Enter commit message (or press ENTER for default)"
+        
+        if ([string]::IsNullOrWhiteSpace($commitMsg)) {
+            $commitMsg = "feat(ralph): iteration $Iteration complete"
+        }
+        
+        git commit -m $commitMsg
+        
+        $pushResponse = Read-Host "Push to remote? (y/n)"
+        
+        if ($pushResponse -eq "y") {
+            git push
+            Write-Success "Changes pushed to remote"
+        }
+        
+        Write-Success "Changes committed"
+    }
+    else {
+        Write-Info "Skipping commit"
+    }
+}
+
+# Main Ralph Loop
 function Start-RalphLoop {
     $promptFile = "PROMPT_$Mode.md"
     
-    Write-Info "Starting Ralph Loop in $Mode mode"
-    Write-Info "Prompt file: $promptFile"
+    Write-Info "Starting Universal Ralph Loop"
+    Write-Info "Mode: $Mode"
     Write-Info "Max iterations: $Iterations"
-    Write-Info "AI CLI: $CLI"
+    Write-Info "Manual mode: $Manual"
+    Write-Host ""
+    
+    # Create session log directory
+    New-Item -ItemType Directory -Path ".ralph" -Force | Out-Null
+    $sessionLog = ".ralph/session-$(Get-Date -Format 'yyyyMMdd-HHmmss').log"
+    Write-Info "Session log: $sessionLog"
+    Write-Host ""
     
     for ($iteration = 1; $iteration -le $Iterations; $iteration++) {
+        # Log iteration start
+        "=== Iteration $iteration started at $(Get-Date) ===" | Out-File $sessionLog -Append
+        
+        # Show prompt
+        Show-Prompt -PromptFile $promptFile -Iteration $iteration
+        
+        # Wait for user to execute AI
+        Wait-ForUser
+        
+        # Run validation
+        if (Invoke-Validation) {
+            "Validation: PASS" | Out-File $sessionLog -Append
+        }
+        else {
+            "Validation: FAIL" | Out-File $sessionLog -Append
+            Write-Warning "Validation failed, but continuing..."
+        }
+        
+        # Check for git changes
+        if (Test-GitChanges) {
+            Invoke-CommitPrompt -Iteration $iteration
+        }
+        else {
+            Write-Info "No changes detected"
+        }
+        
+        # Ask to continue
         Write-Host ""
-        Write-Info "--- Iteration $iteration/$Iterations ---"
+        $response = Read-Host "Continue to next iteration? (y/n)"
         
-        # Execute AI with prompt
-        Write-Info "Executing AI iteration..."
-        try {
-            if ($Verbose) {
-                Get-Content $promptFile | & $CLI -p --dangerously-skip-permissions
-            }
-            else {
-                Get-Content $promptFile | & $CLI -p --dangerously-skip-permissions | Out-Null
-            }
-            
-            Write-Success "AI iteration completed"
-            
-            # Run validation (backpressure)
-            if (Invoke-Validation) {
-                Write-Success "Iteration $iteration validated successfully"
-                
-                # Auto git push
-                try {
-                    $currentBranch = git branch --show-current
-                    git push origin $currentBranch
-                    Write-Success "Changes pushed to remote"
-                }
-                catch {
-                    Write-Warning "Failed to push changes (continuing anyway)"
-                }
-            }
-            else {
-                Write-Warning "Validation failed, continuing to next iteration"
-            }
-        }
-        catch {
-            Write-Error "AI execution failed: $($_.Exception.Message)"
-            Write-Info "Continuing to next iteration..."
+        if ($response -ne "y") {
+            Write-Info "Stopping Ralph Loop at iteration $iteration"
+            break
         }
         
-        # Sleep between iterations
-        if ($iteration -lt $Iterations) {
-            Write-Info "Sleeping for $Sleep seconds before next iteration..."
-            Start-Sleep -Seconds $Sleep
-        }
+        Write-Host ""
     }
     
-    Write-Info "Ralph Loop completed after $Iterations iterations"
+    Write-Success "Ralph Loop completed"
+    Write-Info "Session log: $sessionLog"
 }
 
 # Handle help
@@ -221,29 +281,25 @@ if ($Help) {
     exit 0
 }
 
-# Validate mode parameter
+# Validate mode
 if ($Mode -notin @("build", "plan")) {
-    Write-Error "Invalid mode: $Mode. Must be 'build' or 'plan'"
+    Write-ErrorMsg "Invalid mode: $Mode. Must be 'build' or 'plan'"
     Show-Help
     exit 1
 }
 
-# Handle dry run
-if ($DryRun) {
-    if (Test-RalphSetup) {
-        exit 0
-    }
-    else {
-        exit 1
-    }
-}
-
-# Validate setup before starting
+# Validate setup
 if (-not (Test-RalphSetup)) {
     exit 1
 }
 
-# Run the Ralph Loop
+# Handle dry-run
+if ($DryRun) {
+    Write-Success "Dry-run complete - setup is valid"
+    exit 0
+}
+
+# Run Ralph Loop
 Start-RalphLoop
 
-Write-Success "Ralph Loop execution complete"
+Write-Success "Universal Ralph Loop execution complete"

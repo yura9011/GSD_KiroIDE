@@ -4,6 +4,15 @@
 > 
 > This file serves as shared state between Ralph Loop iterations. Each iteration reads this file to determine what to work on next, then updates it with progress and discoveries.
 
+# Implementation Plan
+
+**Ralph Loop Migration**: This project now uses Universal Ralph Loop protocol.
+- See `.gsd/protocols/ralph-loop.md` for protocol specification
+- See `.gsd/legacy/ralph-cli/` for previous CLI-dependent implementation
+- Current implementation works with any AI assistant (no CLI required)
+
+---
+
 ## Current Tasks (Phase 1: Core Ralph Engine)
 
 ### High Priority
