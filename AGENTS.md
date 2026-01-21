@@ -31,6 +31,7 @@ Run these commands before marking any task complete:
 - Specific validation: `./scripts/validate.sh --code --workflows` or `./scripts/validate.ps1 -Code -Workflows`
 - Legacy validation: `./scripts/validate-all.sh` or `./scripts/validate-all.ps1`
 - Test loop scripts: `./loop.sh --dry-run` or `./loop.ps1 -DryRun`
+- Index codebase: `./scripts/index-codebase.sh` or `./scripts/index-codebase.ps1`
 - Check file structure: `ls -la` or `Get-ChildItem`
 - Verify git state: `git status`
 

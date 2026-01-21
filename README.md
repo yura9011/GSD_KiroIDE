@@ -50,14 +50,22 @@ Get Shit Done (GSD) is a context engineering framework created by [glittercowboy
 
 ## Features
 
-- 25 workflows for structured development
-- Universal validation (no IDE dependencies)
-- Cross-platform scripts (bash + PowerShell)
-- File-based task coordination
-- Portable across all AI assistants
-- Complete validation system
+- **25+ workflows** for structured development
+- **Codebase Intelligence** - Automatic indexing and pattern detection
+- **Universal validation** (no IDE dependencies)
+- **Cross-platform scripts** (bash + PowerShell)
+- **File-based task coordination** with parallel execution support
+- **Ralph Loop** - Autonomous execution protocol
+- **Git hooks** - Automatic validation and indexing
+- **Quick mode** - Ad-hoc tasks without full planning
+- **Portable** across all AI assistants
+- **Complete validation system**
 
 ## Quick Start
+
+**New to GSD?** Read [QUICKSTART.md](QUICKSTART.md) for a 15-minute getting started guide.
+
+**Existing project?** Read [.gsd/guides/brownfield.md](.gsd/guides/brownfield.md) for brownfield adoption.
 
 ### Installation
 
