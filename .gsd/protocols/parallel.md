@@ -4,12 +4,9 @@
 
 This protocol defines universal patterns for coordinating multiple tasks that work in any environment with any AI assistant, using only file-based coordination and standard operations.
 
-## Core Principles
+**Core Principles**: See `.gsd/protocols/README.md` for universal principles that apply to all protocols.
 
-1. **Environment Agnostic**: Works with terminal + AI chat, any IDE, or web-based environments
-2. **AI Agnostic**: Functions identically with any AI assistant or human execution
-3. **File-Based Coordination**: Uses standard files and git for task management
-4. **Graceful Degradation**: Clear sequential execution when parallel processing unavailable
+**Shell Patterns**: See `.gsd/examples/shell-patterns.md` for reusable code examples.
 
 ## Task Coordination Patterns
 
@@ -84,135 +81,33 @@ When AI coordination unavailable:
 
 ## Cross-Platform Implementation
 
-### Bash Implementation
+**Complete implementation examples**: See `.gsd/examples/shell-patterns.md` for:
+- Task queue initialization (bash and PowerShell)
+- Add task functions
+- Move task between states
+- Progress tracking patterns
+
+**Quick reference**:
 ```bash
-#!/bin/bash
-# Universal task coordination
-
-TASK_DIR=".gsd/tasks"
-mkdir -p "$TASK_DIR"
-
-# Initialize task queue
-init_task_queue() {
-    echo "# Task Queue" > "$TASK_DIR/queue.md"
-    echo "# In Progress" > "$TASK_DIR/in-progress.md"
-    echo "# Completed Tasks" > "$TASK_DIR/completed.md"
-    echo "# Failed Tasks" > "$TASK_DIR/failed.md"
-}
-
-# Add task to queue
-add_task() {
-    local task_id="$1"
-    local description="$2"
-    local timestamp=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-    
-    cat >> "$TASK_DIR/queue.md" << EOF
-
-## Task: $task_id
-- **Type**: implementation
-- **Priority**: medium
-- **Dependencies**: none
-- **Assigned**: auto
-- **Status**: queued
-- **Created**: $timestamp
-- **Updated**: $timestamp
-
-### Description
-$description
-
-### Success Criteria
-- [ ] Task completed successfully
-
-EOF
-}
-
-# Move task between states
-move_task() {
-    local task_id="$1"
-    local from_file="$2"
-    local to_file="$3"
-    
-    # Extract task block and move it
-    sed -n "/^## Task: $task_id$/,/^## Task:/p" "$TASK_DIR/$from_file.md" | head -n -1 >> "$TASK_DIR/$to_file.md"
-    sed -i "/^## Task: $task_id$/,/^## Task:/{/^## Task: $task_id$/d; /^## Task:/!d;}" "$TASK_DIR/$from_file.md"
-}
+# Bash: Initialize and add task
+mkdir -p .gsd/tasks
+echo "# Task Queue" > .gsd/tasks/queue.md
 ```
 
-### PowerShell Implementation
 ```powershell
-# Universal task coordination
-
-$TaskDir = ".gsd/tasks"
-New-Item -ItemType Directory -Path $TaskDir -Force | Out-Null
-
-# Initialize task queue
-function Initialize-TaskQueue {
-    "# Task Queue" | Out-File "$TaskDir/queue.md" -Encoding UTF8
-    "# In Progress" | Out-File "$TaskDir/in-progress.md" -Encoding UTF8
-    "# Completed Tasks" | Out-File "$TaskDir/completed.md" -Encoding UTF8
-    "# Failed Tasks" | Out-File "$TaskDir/failed.md" -Encoding UTF8
-}
-
-# Add task to queue
-function Add-Task {
-    param(
-        [string]$TaskId,
-        [string]$Description
-    )
-    
-    $timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss UTC")
-    
-    $taskBlock = @"
-
-## Task: $TaskId
-- **Type**: implementation
-- **Priority**: medium
-- **Dependencies**: none
-- **Assigned**: auto
-- **Status**: queued
-- **Created**: $timestamp
-- **Updated**: $timestamp
-
-### Description
-$Description
-
-### Success Criteria
-- [ ] Task completed successfully
-
-"@
-    
-    Add-Content "$TaskDir/queue.md" $taskBlock -Encoding UTF8
-}
-
-# Move task between states
-function Move-Task {
-    param(
-        [string]$TaskId,
-        [string]$FromFile,
-        [string]$ToFile
-    )
-    
-    $content = Get-Content "$TaskDir/$FromFile.md" -Raw
-    # Implementation would extract and move task blocks
-    # Simplified for example
-}
+# PowerShell: Initialize and add task
+New-Item -ItemType Directory -Path .gsd/tasks -Force
+"# Task Queue" | Out-File .gsd/tasks/queue.md -Encoding UTF8
 ```
 
 ## Workflow Integration Patterns
 
-### Research Workflow Pattern
-```markdown
-## Research Coordination
-
-### Traditional (invokeSubAgent)
+**Traditional approach** (IDE-specific):
 ```
-invokeSubAgent({
-  name: "research-agent",
-  prompt: "Research topic X"
-})
+invokeSubAgent({ name: "research-agent", prompt: "Research X" })
 ```
 
-### Universal Pattern
+**Universal pattern**:
 ```
 1. Create research task in queue.md
 2. Execute research following task template
@@ -221,32 +116,13 @@ invokeSubAgent({
 5. Aggregate results for main workflow
 ```
 
-### Map Workflow Pattern
-```markdown
-## Codebase Analysis Coordination
-
-### Traditional (invokeSubAgent)
-```
-invokeSubAgent({
-  name: "context-gatherer", 
-  prompt: "Analyze codebase structure"
-})
-```
-
-### Universal Pattern
-```
-1. Break analysis into focused tasks:
-   - File structure analysis
-   - Dependency mapping  
-   - Architecture documentation
-2. Execute tasks sequentially or in parallel
-3. Combine results into ARCHITECTURE.md
-4. Verify completeness against requirements
-```
+**See also**: `.gsd/lib/task-queue.md` for task template format.
 
 ## Status Tracking
 
-### Progress Indicators
+**Progress indicators**: See `.gsd/examples/shell-patterns.md` for progress tracking patterns.
+
+**Example output**:
 ```
 === Task Execution Progress ===
 ✓ Task 1: File structure analysis (completed)
@@ -257,85 +133,37 @@ invokeSubAgent({
 3/4 tasks processed, 1 remaining
 ```
 
-### Status File Format
-```markdown
-# Execution Status
-
-## Summary
-- **Total Tasks**: 4
-- **Completed**: 2  
-- **In Progress**: 1
-- **Failed**: 1
-- **Remaining**: 0
-
-## Timeline
-- 14:30 - Started task queue processing
-- 14:32 - Completed file structure analysis
-- 14:35 - Started dependency mapping
-- 14:38 - Failed performance analysis (tool unavailable)
-- 14:40 - Completed dependency mapping
-
-## Next Steps
-- Retry failed tasks with manual fallback
-- Aggregate completed results
-- Update main workflow status
-```
+**Status file format**: See `.gsd/lib/task-status.md` for complete template.
 
 ## Error Handling
 
-### When Parallel Processing Unavailable
-```
-⚠ Parallel processing not available
-📋 Switching to sequential execution
-✓ Task queue initialized for sequential processing
-💡 Tasks will execute one at a time with progress updates
-```
+**Standard error messages**: See `.gsd/examples/shell-patterns.md` for graceful degradation patterns.
 
-### When AI Coordination Fails
-```
-❌ AI task coordination failed
-📖 Switching to manual coordination mode
-📋 Task list generated for human execution
-💡 Follow task instructions and update status manually
-```
-
-### When File System Restricted
-```
-⚠ File system access limited
-💾 Using git-based coordination
-✓ Task status tracked via git commits
-💡 Each task completion creates atomic commit
-```
+**Key scenarios**:
+- Parallel processing unavailable → Switch to sequential execution
+- AI coordination fails → Provide manual task list
+- File system restricted → Use git-based coordination
 
 ## Integration with GSD Workflows
 
-### Execute Workflow Integration
-```markdown
-## Wave-Based Execution with Universal Coordination
+**Execute workflow**: Use parallel.md for wave-based execution with task coordination.
 
-### Wave 1 Tasks
+**Verify workflow**: Break verification into independent checks using task queue.
+
+**Map workflow**: Coordinate codebase analysis tasks (file structure, dependencies, architecture).
+
+**Research workflow**: Coordinate research tasks with results aggregation.
+
+**Example**:
+```markdown
+## Wave-Based Execution
 1. Initialize task queue: `.gsd/tasks/queue.md`
-2. Add wave 1 tasks to queue
-3. Execute tasks (parallel if available, sequential otherwise)
+2. Add wave tasks to queue
+3. Execute (parallel if available, sequential otherwise)
 4. Verify wave completion before proceeding
-
-### Wave 2 Tasks  
-1. Add wave 2 tasks to queue
-2. Check wave 1 dependencies satisfied
-3. Execute wave 2 tasks
-4. Aggregate results and update roadmap
 ```
 
-### Verify Workflow Integration
-```markdown
-## Verification with Task Coordination
-
-1. Create verification task queue
-2. Break verification into independent checks
-3. Execute verification tasks
-4. Aggregate results into VERIFICATION.md
-5. Report overall phase status
-```
+**See also**: `.gsd/workflows/execute.md`, `.gsd/workflows/map.md`, `.gsd/workflows/research-phase.md` for complete integration.
 
 ## Success Criteria
 
@@ -346,3 +174,5 @@ This protocol succeeds when:
 - Enables confident multi-task execution anywhere
 - Requires zero IDE-specific features
 - Supports both AI and human task execution
+
+**See also**: `.gsd/protocols/README.md` for common success criteria across all protocols.

@@ -4,12 +4,9 @@
 
 This protocol defines a universal directory structure that works identically in any environment with any AI assistant, eliminating all IDE-specific dependencies while maintaining full GSD functionality.
 
-## Core Principles
+**Core Principles**: See `.gsd/protocols/README.md` for universal principles that apply to all protocols.
 
-1. **IDE Independence**: Zero dependencies on .kiro/, .claude/, .cursor/, or any IDE-specific directories
-2. **Universal Compatibility**: Works identically in terminal, any IDE, or web-based environments
-3. **Git-Based State**: All state management through git and standard files
-4. **Graceful Degradation**: Clear fallbacks for restricted environments
+**Shell Patterns**: See `.gsd/examples/shell-patterns.md` for reusable code examples.
 
 ## Universal Directory Structure
 
@@ -87,252 +84,90 @@ project-root/
 
 ## State Management Patterns
 
-### Git-Based State Persistence
-All GSD state is managed through git commits and standard files:
+**Git-based state**: All GSD state is managed through git commits and standard files.
 
+**Key commands**:
 ```bash
-# State tracking through git
-git log --oneline --grep="feat(phase-" --grep="docs(phase-"
+# View phase history
+git log --oneline --grep="feat(phase-"
 
-# Current state in STATE.md
+# Check current state
 cat STATE.md
 
-# Session history in JOURNAL.md
+# View session history
 cat JOURNAL.md
-
-# Decisions in DECISIONS.md
-cat DECISIONS.md
 ```
 
-### Configuration Storage
-No IDE-specific configuration directories. All configuration in standard files:
-
-```markdown
-## Configuration Locations
-
-| Type | Location | Format |
-|------|----------|--------|
-| Project settings | SPEC.md | Markdown |
-| Phase definitions | ROADMAP.md | Markdown |
-| Current state | STATE.md | Markdown |
-| Tool preferences | .gsd/SYSTEM.md | Markdown |
-| Validation rules | .gsd/protocols/validation.md | Markdown |
-```
-
-### Temporary Files
-Use standard temporary patterns:
-
-```bash
-# Cross-platform temporary directory
-TEMP_DIR="${TMPDIR:-/tmp}/gsd-$$"
-mkdir -p "$TEMP_DIR"
-
-# Cleanup on exit
-trap "rm -rf '$TEMP_DIR'" EXIT
-```
+**Configuration storage**: All configuration in standard markdown files (SPEC.md, ROADMAP.md, STATE.md). No IDE-specific directories.
 
 ## Migration from IDE-Specific Structures
 
-### From Kiro (.kiro/ directory)
-```bash
-# Migrate Kiro-specific files to universal structure
-mkdir -p .gsd/legacy/kiro/
+**General pattern**: Move IDE-specific directories to `.gsd/legacy/{ide-name}/` and extract universal patterns.
 
-# Move Kiro configurations to legacy
+**Examples**:
+```bash
+# From Kiro
+mkdir -p .gsd/legacy/kiro/
 mv .kiro/ .gsd/legacy/kiro/ 2>/dev/null || true
 
-# Extract universal patterns from Kiro configs
-# (Manual process - review and adapt to universal protocols)
-```
-
-### From Claude Code (.claude/ directory)
-```bash
-# Migrate Claude Code files to universal structure
+# From Claude Code
 mkdir -p .gsd/legacy/claude/
-
-# Move Claude configurations to legacy
 mv .claude/ .gsd/legacy/claude/ 2>/dev/null || true
-
-# Extract universal patterns from Claude configs
-# (Manual process - review and adapt to universal protocols)
 ```
 
-### From Other IDEs
-```bash
-# General migration pattern
-mkdir -p .gsd/legacy/{ide-name}/
-
-# Move IDE-specific directories to legacy
-mv .{ide-name}/ .gsd/legacy/{ide-name}/ 2>/dev/null || true
-
-# Review and extract universal patterns
-```
+After migration, review legacy files and adapt patterns to universal protocols.
 
 ## Environment-Specific Adaptations
 
 ### Terminal + AI Chat
-```markdown
-## Terminal Environment
+- **File Operations**: Standard shell commands (ls, cat, mkdir, git)
+- **State Management**: Manual file updates (STATE.md, JOURNAL.md)
+- **Task Coordination**: Manual task tracking using .tasks/ directory
 
-**File Operations**: Standard shell commands
-- `ls`, `cat`, `mkdir`, `cp`, `mv`, `rm`
-- `git add`, `git commit`, `git status`
-- Text editors: `nano`, `vim`, `code`, or any available
-
-**State Management**: Manual file updates
-- Edit STATE.md after significant changes
-- Update JOURNAL.md for session notes
-- Commit changes with descriptive messages
-
-**Task Coordination**: Manual task tracking
-- Use .tasks/ directory for complex workflows
-- Update task status manually
-- Follow task queue templates from .gsd/lib/
-```
-
-### IDE Environments
-```markdown
-## IDE Environment (Any IDE)
-
-**File Operations**: IDE file explorer and editor
-- Use IDE's built-in file management
-- Leverage IDE's git integration
-- Use IDE's search and replace features
-
-**State Management**: IDE-assisted editing
-- Use IDE's markdown preview for documentation
-- Leverage IDE's git integration for commits
-- Use IDE's terminal for shell commands
-
-**Task Coordination**: IDE + universal patterns
-- Use IDE's task/todo features alongside GSD tasks
-- Leverage IDE's multi-file editing for task updates
-- Use IDE's integrated terminal for validation
-```
+### IDE Environments (Any IDE)
+- **File Operations**: IDE file explorer and editor
+- **State Management**: IDE-assisted editing with git integration
+- **Task Coordination**: IDE features + universal patterns
 
 ### Web-Based Environments
-```markdown
-## Web-Based Environment
+- **File Operations**: Limited file system, use web-based managers
+- **State Management**: Git-centric approach, frequent commits
+- **Task Coordination**: Simplified single-file tracking
 
-**File Operations**: Limited file system access
-- Use web-based file managers when available
-- Rely on git web interfaces for version control
-- Use web-based editors for file modifications
-
-**State Management**: Git-centric approach
-- Commit frequently to preserve state
-- Use git history as primary state tracking
-- Leverage web git interfaces for file management
-
-**Task Coordination**: Simplified patterns
-- Use single-file task tracking when multi-file unavailable
-- Embed task status in main documentation files
-- Use git commits as task completion markers
-```
+**See also**: `.gsd/UNIVERSAL-SETUP.md` for detailed setup instructions per environment.
 
 ## Fallback Patterns
 
-### Restricted File System Access
-When file system is limited:
+**When file system is limited**: Embed GSD structure in single files (e.g., README.md with embedded state/roadmap).
 
-```markdown
-## Single-File Fallback
+**When git unavailable**: Use timestamped files (STATE-20260121.md, ROADMAP-v1.md) for manual versioning.
 
-If multiple files unavailable, embed GSD structure in single files:
+**When shell unavailable**: Use manual operations with checklists and step-by-step instructions.
 
-### README.md with embedded GSD
-```markdown
-# Project Name
-
-## GSD State
-- **Phase**: 1
-- **Status**: In Progress
-- **Last Updated**: 2026-01-21
-
-## GSD Roadmap
-### Phase 1: Foundation
-- [ ] Task 1
-- [x] Task 2
-
-## GSD Journal
-- 2026-01-21: Started Phase 1
-```
-
-### No Git Access
-When git unavailable:
-
-```markdown
-## Manual Versioning
-
-Use file-based versioning:
-- STATE-20260121.md (timestamped state files)
-- ROADMAP-v1.md, ROADMAP-v2.md (versioned roadmaps)
-- Manual backup of important files
-- Clear naming conventions for file versions
-```
-
-### No Shell Access
-When shell commands unavailable:
-
-```markdown
-## Manual Operations
-
-Replace shell commands with manual processes:
-- Manual file validation using checklists
-- Manual task coordination using templates
-- Manual progress tracking in documentation
-- Clear step-by-step instructions for all operations
-```
+**See also**: `.gsd/UNIVERSAL-SETUP.md` for complete fallback strategies.
 
 ## Validation and Verification
 
-### Structure Validation
-```bash
-# Verify universal structure exists
-test -d .gsd && echo "✓ GSD system directory exists"
-test -f SPEC.md && echo "✓ Project specification exists"
-test -f ROADMAP.md && echo "✓ Roadmap exists"
-test -f STATE.md && echo "✓ State tracking exists"
+**Structure validation**: See `.gsd/examples/shell-patterns.md` for file operation patterns.
 
-# Check for IDE-specific directories (should not exist in universal setup)
-! test -d .kiro && echo "✓ No Kiro dependencies"
-! test -d .claude && echo "✓ No Claude Code dependencies"
-! test -d .cursor && echo "✓ No Cursor dependencies"
+**Quick checks**:
+```bash
+# Verify universal structure
+test -d .gsd && test -f SPEC.md && test -f ROADMAP.md && echo "✓ GSD structure valid"
+
+# Check for IDE dependencies (should not exist)
+! test -d .kiro && ! test -d .claude && echo "✓ No IDE dependencies"
 ```
 
-### Cross-Platform Compatibility
-```bash
-# Test file operations work on current platform
-echo "test" > .gsd/test.tmp && rm .gsd/test.tmp && echo "✓ File operations work"
-
-# Test git operations work
-git status >/dev/null 2>&1 && echo "✓ Git operations work"
-
-# Test shell commands work
-command -v ls >/dev/null 2>&1 && echo "✓ Shell commands available"
-```
+**Cross-platform compatibility**: Test file and git operations work on current platform.
 
 ## Integration with Universal Protocols
 
-### Validation Integration
-```markdown
-## Using Universal Validation
+**Validation**: `.gsd/protocols/validation.md` validates files in standard project directories with no IDE dependencies.
 
-The universal validation protocol (.gsd/protocols/validation.md) works with this file structure:
-- Validates files in standard project directories
-- No dependencies on IDE-specific validation tools
-- Clear fallbacks when advanced tools unavailable
-```
+**Parallel Processing**: `.gsd/protocols/parallel.md` uses .tasks/ directory for coordination with standard file operations.
 
-### Parallel Processing Integration
-```markdown
-## Using Universal Parallel Processing
-
-The universal parallel processing protocol (.gsd/protocols/parallel.md) uses:
-- .tasks/ directory for task coordination
-- Standard file operations for status tracking
-- Git commits for task completion markers
-```
+**See also**: `.gsd/protocols/README.md` for how all protocols work together.
 
 ## Success Criteria
 
@@ -343,3 +178,5 @@ This file structure protocol succeeds when:
 - Supports both automated and manual file operations
 - Maintains full GSD functionality without tool dependencies
 - Enables confident project management anywhere
+
+**See also**: `.gsd/protocols/README.md` for common success criteria across all protocols.

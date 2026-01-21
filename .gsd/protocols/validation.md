@@ -4,12 +4,9 @@
 
 This protocol defines universal validation methods that work in any environment with any AI assistant, using only standard shell commands and widely-available language tools.
 
-## Core Principles
+**Core Principles**: See `.gsd/protocols/README.md` for universal principles that apply to all protocols.
 
-1. **Universal Compatibility**: Works in terminal + AI chat, any IDE, or web-based environments
-2. **Graceful Degradation**: Clear fallbacks when advanced tools unavailable
-3. **Cross-Platform**: Identical behavior on Windows, macOS, and Linux
-4. **No Dependencies**: Zero reliance on IDE-specific features
+**Shell Patterns**: See `.gsd/examples/shell-patterns.md` for reusable code examples.
 
 ## Language-Specific Validation
 
@@ -73,114 +70,21 @@ powershell -NoProfile -Command "& { . ./script.ps1; exit 0 }"
 
 ## Cross-Platform Implementation
 
-### Bash Implementation
+**Complete implementation examples**: See `.gsd/examples/shell-patterns.md` for:
+- Tool detection patterns (bash and PowerShell)
+- JavaScript/TypeScript validation functions
+- Python validation functions
+- File operation patterns
+
+**Quick reference**:
 ```bash
-#!/bin/bash
-validate_universal() {
-    local exit_code=0
-    
-    # Detect available tools
-    command -v eslint >/dev/null 2>&1 && HAS_ESLINT=1
-    command -v pylint >/dev/null 2>&1 && HAS_PYLINT=1
-    command -v tsc >/dev/null 2>&1 && HAS_TSC=1
-    
-    # JavaScript/TypeScript validation
-    if find . -name "*.js" -o -name "*.ts" | grep -q .; then
-        if [[ $HAS_ESLINT ]]; then
-            echo "Running ESLint..."
-            npx eslint . --ext .js,.jsx,.ts,.tsx || exit_code=1
-        else
-            echo "ESLint not available, using basic syntax check..."
-            find . -name "*.js" -exec node -c {} \; || exit_code=1
-        fi
-    fi
-    
-    # Python validation
-    if find . -name "*.py" | grep -q .; then
-        if [[ $HAS_PYLINT ]]; then
-            echo "Running PyLint..."
-            pylint *.py || exit_code=1
-        else
-            echo "PyLint not available, using basic syntax check..."
-            find . -name "*.py" -exec python -m py_compile {} \; || exit_code=1
-        fi
-    fi
-    
-    return $exit_code
-}
-```
-
-### PowerShell Implementation
-```powershell
-function Validate-Universal {
-    $exitCode = 0
-    
-    # Detect available tools
-    $hasEslint = Get-Command eslint -ErrorAction SilentlyContinue
-    $hasPylint = Get-Command pylint -ErrorAction SilentlyContinue
-    $hasTsc = Get-Command tsc -ErrorAction SilentlyContinue
-    
-    # JavaScript/TypeScript validation
-    $jsFiles = Get-ChildItem -Recurse -Include *.js,*.ts,*.jsx,*.tsx
-    if ($jsFiles) {
-        if ($hasEslint) {
-            Write-Host "Running ESLint..."
-            npx eslint . --ext .js,.jsx,.ts,.tsx
-            if ($LASTEXITCODE -ne 0) { $exitCode = 1 }
-        } else {
-            Write-Host "ESLint not available, using basic syntax check..."
-            foreach ($file in $jsFiles) {
-                node -c $file.FullName
-                if ($LASTEXITCODE -ne 0) { $exitCode = 1 }
-            }
-        }
-    }
-    
-    # Python validation
-    $pyFiles = Get-ChildItem -Recurse -Include *.py
-    if ($pyFiles) {
-        if ($hasPylint) {
-            Write-Host "Running PyLint..."
-            pylint *.py
-            if ($LASTEXITCODE -ne 0) { $exitCode = 1 }
-        } else {
-            Write-Host "PyLint not available, using basic syntax check..."
-            foreach ($file in $pyFiles) {
-                python -m py_compile $file.FullName
-                if ($LASTEXITCODE -ne 0) { $exitCode = 1 }
-            }
-        }
-    }
-    
-    return $exitCode
-}
-```
-
-## Environment Detection
-
-### Tool Availability Check
-```bash
-# Bash
-check_tools() {
-    echo "=== Tool Availability ==="
-    command -v node >/dev/null 2>&1 && echo "✓ Node.js available" || echo "✗ Node.js not found"
-    command -v python >/dev/null 2>&1 && echo "✓ Python available" || echo "✗ Python not found"
-    command -v eslint >/dev/null 2>&1 && echo "✓ ESLint available" || echo "✗ ESLint not found"
-    command -v pylint >/dev/null 2>&1 && echo "✓ PyLint available" || echo "✗ PyLint not found"
-    echo "========================="
-}
+# Bash: Detect and validate
+command -v eslint >/dev/null 2>&1 && npx eslint . || node -c file.js
 ```
 
 ```powershell
-# PowerShell
-function Test-Tools {
-    Write-Host "=== Tool Availability ==="
-    if (Get-Command node -ErrorAction SilentlyContinue) { Write-Host "✓ Node.js available" } else { Write-Host "✗ Node.js not found" }
-    if (Get-Command python -ErrorAction SilentlyContinue) { Write-Host "✓ Python available" } else { Write-Host "✗ Python not found" }
-    if (Get-Command eslint -ErrorAction SilentlyContinue) { Write-Host "✓ ESLint available" } else { Write-Host "✗ ESLint not found" }
-    if (Get-Command pylint -ErrorAction SilentlyContinue) { Write-Host "✓ PyLint available" } else { Write-Host "✗ PyLint not found" }
-    Write-Host "========================="
-}
+# PowerShell: Detect and validate
+if (Get-Command eslint -EA SilentlyContinue) { npx eslint . } else { node -c file.js }
 ```
 
 ## Manual Verification Fallbacks
@@ -204,41 +108,29 @@ When no automated tools are available, use these manual verification steps:
 
 ## Integration with GSD Workflows
 
-### In Execute Workflow
+**Execute workflow**: Run universal validation before marking tasks complete.
+
+**Verify workflow**: Use validation for phase verification with evidence collection.
+
+**Example**:
 ```markdown
 ## Validation Step
-1. Run universal validation: `./scripts/validate-universal.sh`
-2. If validation fails: Fix issues before proceeding
+1. Run: `./scripts/validate-universal.sh`
+2. If fails: Fix issues before proceeding
 3. If tools unavailable: Use manual verification checklist
-4. Document validation method used in commit message
+4. Document validation method in commit message
 ```
 
-### In Verify Workflow
-```markdown
-## Verification Requirements
-- [ ] Universal validation passes (or manual verification complete)
-- [ ] Cross-platform compatibility confirmed
-- [ ] No IDE-specific dependencies introduced
-- [ ] Clear error messages when tools unavailable
-```
+**See also**: `.gsd/workflows/execute.md` and `.gsd/workflows/verify.md` for complete integration.
 
 ## Error Handling
 
-### When Tools Unavailable
-```
-⚠ Advanced validation tools not available
-📋 Using manual verification checklist
-✓ Basic syntax validation complete
-💡 Install eslint/pylint for enhanced validation
-```
+**Standard error messages**: See `.gsd/examples/shell-patterns.md` for graceful degradation patterns.
 
-### When Validation Fails
-```
-❌ Validation failed: 3 issues found
-📁 Files with issues: src/main.js, docs/README.md
-🔧 Fix issues and re-run validation
-📖 See manual verification guide if tools unavailable
-```
+**Key scenarios**:
+- Tools unavailable → Use manual verification checklist
+- Validation fails → Show file list and error count
+- Restricted environment → Provide clear fallback instructions
 
 ## Success Criteria
 
@@ -248,3 +140,5 @@ This protocol succeeds when:
 - Maintains cross-platform compatibility
 - Requires zero IDE-specific features
 - Enables confident code quality validation anywhere
+
+**See also**: `.gsd/protocols/README.md` for common success criteria across all protocols.
