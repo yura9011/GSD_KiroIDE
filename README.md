@@ -71,8 +71,8 @@ Get Shit Done (GSD) is a context engineering framework created by [glittercowboy
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/yura9011/GSD_KiroIDE.git
-cd GSD_KiroIDE
+git clone https://github.com/yura9011/GSD-universal.git
+cd GSD-universal
 ```
 
 2. Copy GSD to your project:
