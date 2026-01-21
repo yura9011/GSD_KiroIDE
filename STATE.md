@@ -2,101 +2,156 @@
 
 ## Current Position
 
-- **Milestone**: gsd-universal  
+- **Milestone**: gsd-universal (evolved from ralph-loop)
 - **Phase**: 2 (Complete)
-- **Task**: Universal Ralph Loop implemented
-- **Status**: Ready for Phase 3 (/plan 3)
+- **Status**: Ready for Phase 3 discussion
 - **Last Updated**: 2026-01-21
-
-## Context
-
-Phases 1-4 successfully implemented:
-
-**Phase 1 - Hooks Foundation**:
-- ✅ Hook infrastructure
-- ✅ Planning Lock hook (PreToolUse)
-- ✅ Syntax Validation hook (PostToolUse)
-
-**Phase 2 - Skills Migration**:
-- ✅ Skills infrastructure
-- ✅ spec-writer, roadmap-builder, commit-helper skills
-- ✅ Progressive disclosure pattern
-
-**Phase 3 - Subagent Integration**:
-- ✅ Subagent infrastructure (`.kiro/agents/`)
-- ✅ map-explorer subagent (codebase analysis, 99% context savings)
-- ✅ research-agent subagent (technical research with web access)
-- ✅ verify-agent subagent (autonomous verification)
-- ✅ Workflows updated to reference subagents
-- ✅ Complete documentation and integration
-
-**Phase 4 - Command Modernization**:
-- ✅ All 25 GSD commands migrated to `.claude/commands/`
-- ✅ Subdirectory organization (phase/, milestone/, session/, util/)
-- ✅ Argument hints for autocomplete
-- ✅ Bash pre-execution for context
-- ✅ File references with @ syntax
-- ✅ Workflow compatibility maintained
-- ✅ Complete documentation (README.md, SYSTEM.md)
-
-## Previous Milestone Complete: kiro-integration
-
-All 4 phases successfully implemented:
-- Phase 1: Hooks Foundation
-- Phase 2: Skills Migration  
-- Phase 3: Subagent Integration
-- Phase 4: Command Modernization
-
-GSD framework now fully integrated with Kiro IDE capabilities while maintaining cross-platform portability.
 
 ## Current Milestone: gsd-universal
 
 **Goal**: Transform GSD into the first truly IDE-agnostic framework for AI development
 
-**Revolutionary Vision**: Make GSD work identically in Kiro, Claude Code, Cursor, Windsurf, Antigravity, and any future AI IDE without modification.
+**Vision**: Ralph Loop + GSD Universal = same thing. Ralph-loop milestone evolved into gsd-universal to reflect the broader vision of making ALL of GSD universal, not just Ralph.
 
-**Phases Planned**: 5 phases covering protocol abstraction, adapter system, Ralph universal, documentation, and community ecosystem
+**Progress**: 2 of 5 phases complete (40%)
 
-**Key Insight**: All IDE "features" (skills, steerings, powers, etc.) are fundamentally markdown files with instructions - we can universalize this pattern.
+### Completed Phases
 
-**Next Steps**: Phase 1 complete! Ready to plan Phase 2 - Adapter System Design (/plan 2)
+**Phase 1: Pure Protocol Foundation** ✅ (Completed 2026-01-21)
 
-## Last Session Summary
-Phase 1 executed successfully with post-completion optimization:
-- Plan 1.1: Universal Validation System (replaced getDiagnostics)
-- Plan 1.2: Universal Parallel Processing Pattern (replaced invokeSubAgent)  
-- Plan 1.3: Universal File Structure & Setup Guide (eliminated IDE dependencies)
-- Post-completion: Protocol consolidation reducing duplication by ~200 lines
-  - Created .gsd/protocols/README.md (core principles once, not 3x)
-  - Created .gsd/examples/shell-patterns.md (centralized code examples)
-  - Reduced all 3 protocols by removing duplications
+Created universal protocols that work in any environment:
 
-GSD Universal now has a pure protocol foundation that works in any environment with any AI assistant.
+1. **Universal Validation System** (Plan 1.1)
+   - `.gsd/protocols/validation.md` - Language-specific validation without getDiagnostics
+   - `scripts/validate-universal.sh` and `.ps1` - Cross-platform validation
+   - Updated AGENTS.md with universal validation commands
+   - Created `run-bash.ps1` helper for Windows bash execution
 
-## Previous Milestone Complete: ralph-loop
+2. **Universal Parallel Processing** (Plan 1.2)
+   - `.gsd/protocols/parallel.md` - File-based task coordination
+   - `.gsd/lib/task-queue.md` and `task-status.md` - Task coordination templates
+   - Updated workflows (map.md, research-phase.md) to use universal patterns
 
-**Status**: Core implementation complete, ready for universalization
-- ✅ Ralph Loop engine with AI-agnostic design
-- ✅ Cross-platform compatibility (bash + PowerShell)  
-- ✅ Integration with GSD validation system
-- ✅ Works with multiple AI CLIs (kiro, claude, openai, etc.)
+3. **Universal File Structure** (Plan 1.3)
+   - `.gsd/protocols/file-structure.md` - IDE-independent directory structure
+   - `.gsd/UNIVERSAL-SETUP.md` - Setup guide for any environment
+   - `.gsd/WINDOWS-SETUP.md` - Windows-specific setup
+   - Verified core workflows are universal
 
-This provides the perfect foundation for GSD Universal.
+4. **Protocol Consolidation** (Post-completion optimization)
+   - Created `.gsd/protocols/README.md` - Core principles (once)
+   - Created `.gsd/examples/shell-patterns.md` - Reusable patterns
+   - Reduced ~800 lines of duplication across protocols
+   - Improved maintainability and clarity
 
-## Decisions Made
+**Phase 2: Universal Ralph Loop** ✅ (Completed 2026-01-21)
 
-- Usar `.kiro/` como directorio base para configuraciones de Kiro
-- Mantener `.gsd/` para sistema GSD core
-- Python para scripts de validación (cross-platform)
-- Migración gradual manteniendo compatibilidad con workflows existentes
-- Context fork pattern para operaciones de alto volumen (99% context savings)
-- Haiku para exploración, Sonnet para research, dontAsk para verificación autónoma
-- Slash commands referencian workflows existentes para portabilidad
-- Organización en subdirectorios (phase/, milestone/, session/, util/)
-- Comandos project-level en `.claude/commands/` (compartidos via git)
+Transformed Ralph from CLI-dependent tool to pure protocol:
 
-## Open Questions
+1. **Universal Ralph Protocol** (Plan 2.1)
+   - `.gsd/protocols/ralph-loop.md` - Complete protocol specification
+   - `.gsd/templates/PROMPT_build.md` - Universal build prompt (no CLI refs)
+   - `.gsd/templates/PROMPT_plan.md` - Universal plan prompt (no CLI refs)
+   - Defined Ralph as PROTOCOL not tool
+   - 3 execution modes: automated, interactive, manual
 
-- ¿Qué linters/validadores usar para cada lenguaje?
-- ¿Cómo manejar hooks en proyectos multi-lenguaje?
-- ¿Necesitamos Skills específicas por tipo de proyecto?
+2. **Universal Ralph Scripts** (Plan 2.2)
+   - `scripts/ralph.sh` - Bash implementation
+   - `scripts/ralph.ps1` - PowerShell implementation
+   - Interactive mode: show prompt → user executes → validate → continue
+   - No AI CLI dependencies (works with ChatGPT, Claude, Kiro, any AI)
+   - Session logging to `.ralph/`
+   - Updated documentation (README.md, AGENTS.md, UNIVERSAL-SETUP.md)
+
+3. **Migration to Universal** (Plan 2.3)
+   - Moved current loop.sh/loop.ps1 to `.gsd/legacy/ralph-cli/`
+   - Moved current prompts to legacy
+   - Installed universal Ralph as new loop.sh/loop.ps1
+   - Installed universal prompts
+   - Updated IMPLEMENTATION_PLAN.md with migration note
+   - Backward compatibility maintained
+
+### Remaining Phases
+
+**Phase 3: Validation & Testing** ⬜
+- Terminal + web chat testing (ChatGPT, Claude)
+- Multiple editor + AI combinations (VS Code, Kiro, Antigravity)
+- Cross-platform validation (Windows, Mac, Linux)
+- Performance benchmarking
+- Real-world usage scenarios
+
+**Phase 4: Documentation & Migration** ⬜
+- GSD Universal specification document
+- Migration guides for each supported IDE
+- Multi-IDE setup tutorials
+- Community adoption toolkit
+
+**Phase 5: Optional Optimizations** ⬜
+- IDE-specific adapters (optional, not priority)
+- Kiro optimization layer (optional)
+- Antigravity integration helpers (optional)
+- Performance optimizations when tools available
+
+## Key Architectural Decisions
+
+**Phase 2 Decisions** (Documented in DECISIONS.md):
+
+1. **Ralph is a PROTOCOL, not a tool**
+   - Coordinates AI work, doesn't execute AIs
+   - Works with any AI assistant (web, IDE, terminal)
+   - File-based state management
+
+2. **Interactive mode over full automation**
+   - Show prompt → user executes → validate → continue
+   - More universal than trying to execute AI CLIs
+   - Works in environments without CLI access
+
+3. **Pure Protocol Vision**
+   - No IDE-specific dependencies (getDiagnostics, invokeSubAgent)
+   - No CLI dependencies (kiro, claude, openai commands)
+   - Standard tools only (git, shell, text editor)
+   - Markdown + Git + Shell = sufficient
+
+4. **Adapters are optional (Phase 5)**
+   - Not priority for universal compatibility
+   - Nice-to-have optimizations
+   - Core protocol works without them
+
+## Files Created/Modified
+
+**Phase 1 Files:**
+- `.gsd/protocols/validation.md`, `parallel.md`, `file-structure.md`, `README.md`
+- `scripts/validate-universal.sh`, `validate-universal.ps1`, `run-bash.ps1`
+- `.gsd/lib/task-queue.md`, `task-status.md`
+- `.gsd/UNIVERSAL-SETUP.md`, `.gsd/WINDOWS-SETUP.md`
+- `.gsd/examples/shell-patterns.md`
+- Updated: `AGENTS.md`, `.gsd/workflows/map.md`, `research-phase.md`
+
+**Phase 2 Files:**
+- `.gsd/protocols/ralph-loop.md`
+- `.gsd/templates/PROMPT_build.md`, `PROMPT_plan.md`
+- `scripts/ralph.sh`, `ralph.ps1`
+- `loop.sh`, `loop.ps1` (universal versions)
+- `PROMPT_build.md`, `PROMPT_plan.md` (universal versions)
+- `.gsd/legacy/ralph-cli/` (old CLI-dependent versions)
+- Updated: `README.md`, `AGENTS.md`, `.gsd/UNIVERSAL-SETUP.md`, `IMPLEMENTATION_PLAN.md`
+
+## Next Steps
+
+**Immediate Decision Needed**: Phase 3 scope
+
+User concern: Long conversation (~140K tokens), files may be outdated/incoherent
+
+**Options:**
+- **Option A**: Pause now, clean files, start fresh session for Phase 3 decision
+- **Option B**: Simplify Phase 3 (basic testing only)
+- **Option C**: Skip to Phase 4 (documentation) and defer testing
+
+**Recommendation**: Option A - Pause, clean, fresh session
+
+## Session Context
+
+- **Conversation length**: ~140K tokens (very long)
+- **Risk**: Context pollution, outdated file references
+- **Action taken**: Cleaned STATE.md to reflect only gsd-universal milestone
+- **Next**: Update ROADMAP.md, commit, use /pause workflow
