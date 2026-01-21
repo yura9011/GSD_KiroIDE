@@ -4,9 +4,9 @@
 
 Run these commands before marking any task complete:
 
-- Full validation: `./scripts/validate-all.sh` (Linux/Mac)
-- Full validation: `./scripts/validate-all.ps1` (Windows)
-- Syntax check: Use Kiro's getDiagnostics for code files
+- Universal validation: `./scripts/validate-universal.sh` (Linux/Mac)
+- Universal validation: `./scripts/validate-universal.ps1` (Windows)
+- Legacy validation: `./scripts/validate-all.sh` or `./scripts/validate-all.ps1`
 - Git status: `git status --porcelain` (should be clean after commit)
 
 ## Project Conventions
@@ -20,7 +20,8 @@ Run these commands before marking any task complete:
 
 ## Build/Test Commands
 
-- Validate all: `./scripts/validate-all.sh` or `./scripts/validate-all.ps1`
+- Universal validation: `./scripts/validate-universal.sh` or `./scripts/validate-universal.ps1`
+- Legacy validation: `./scripts/validate-all.sh` or `./scripts/validate-all.ps1`
 - Test loop scripts: `./loop.sh --dry-run` or `./loop.ps1 -DryRun`
 - Check file structure: `ls -la` or `Get-ChildItem`
 - Verify git state: `git status`
