@@ -4,9 +4,10 @@
 
 Run these commands before marking any task complete:
 
-- Universal validation: `./scripts/validate-universal.sh` (Linux/Mac)
-- Universal validation: `./scripts/validate-universal.ps1` (Windows)
-- Legacy validation: `./scripts/validate-all.sh` or `./scripts/validate-all.ps1`
+- Consolidated validation: `./scripts/validate.sh --all` (Linux/Mac)
+- Consolidated validation: `./scripts/validate.ps1 -All` (Windows)
+- Legacy universal: `./scripts/validate-universal.sh` or `./scripts/validate-universal.ps1`
+- Legacy all: `./scripts/validate-all.sh` or `./scripts/validate-all.ps1`
 - Git status: `git status --porcelain` (should be clean after commit)
 
 ## Project Conventions
@@ -20,7 +21,8 @@ Run these commands before marking any task complete:
 
 ## Build/Test Commands
 
-- Universal validation: `./scripts/validate-universal.sh` or `./scripts/validate-universal.ps1`
+- Consolidated validation: `./scripts/validate.sh --all` or `./scripts/validate.ps1 -All`
+- Specific validation: `./scripts/validate.sh --code --workflows` or `./scripts/validate.ps1 -Code -Workflows`
 - Legacy validation: `./scripts/validate-all.sh` or `./scripts/validate-all.ps1`
 - Test loop scripts: `./loop.sh --dry-run` or `./loop.ps1 -DryRun`
 - Check file structure: `ls -la` or `Get-ChildItem`
