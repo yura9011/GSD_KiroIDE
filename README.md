@@ -75,7 +75,27 @@ Our implementation makes Ralph Loop truly universal:
 - `--manual` - Full manual mode (no automation)
 - `--dry-run` - Validate setup only
 
-See `.gsd/protocols/ralph-loop.md` for complete protocol specification.
+### Important: Agent Discipline
+
+AI agents can "go rogue" and invent their own plans. To prevent this:
+
+1. **Always use the scripts**: Run `./scripts/ralph.sh build` (don't ask AI directly)
+2. **Copy the full prompt**: Don't paraphrase or summarize
+3. **Verify first action**: Agent should read IMPLEMENTATION_PLAN.md first
+4. **Interrupt if wrong**: Stop agent if it starts inventing plans
+
+**If agent goes rogue:**
+```
+STOP. Read IMPLEMENTATION_PLAN.md NOW and show me what tasks are pending.
+DO NOT continue until we agree on the task.
+```
+
+See `.gsd/protocols/agent-discipline.md` for complete guide.
+
+### Documentation
+
+- `.gsd/protocols/ralph-loop.md` - Complete protocol specification
+- `.gsd/protocols/agent-discipline.md` - Keeping agents on track
 
 ### Credits
 

@@ -1,5 +1,22 @@
 # Universal Ralph Loop - Build Mode
 
+## CRITICAL FIRST STEP
+
+**STOP. Before doing ANYTHING:**
+
+1. **Read `IMPLEMENTATION_PLAN.md`** - This file contains your tasks
+2. **Find the next pending task** - Look for unchecked `- [ ]` items
+3. **Execute ONLY that task** - Do not invent your own plan
+4. **Update `IMPLEMENTATION_PLAN.md`** - Mark task complete when done
+
+**DO NOT:**
+- Start working without reading IMPLEMENTATION_PLAN.md
+- Invent your own tasks or plan
+- Work on multiple tasks at once
+- Skip updating IMPLEMENTATION_PLAN.md
+
+---
+
 ## Context
 
 Read these files to understand the project:

@@ -1,5 +1,22 @@
 # Universal Ralph Loop - Plan Mode
 
+## CRITICAL FIRST STEP
+
+**STOP. Before doing ANYTHING:**
+
+1. **Read `IMPLEMENTATION_PLAN.md`** - This file contains current tasks
+2. **Read `specs/*`** - These files contain requirements
+3. **Compare them** - Find what's missing or needs updating
+4. **Update `IMPLEMENTATION_PLAN.md`** - Add/update tasks based on specs
+
+**DO NOT:**
+- Start planning without reading IMPLEMENTATION_PLAN.md
+- Ignore existing tasks
+- Replace the entire plan
+- Implement anything (this is planning mode only)
+
+---
+
 ## Context
 
 Read these files to understand the project:

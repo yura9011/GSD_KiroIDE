@@ -1,5 +1,18 @@
 # AGENTS.md
 
+## CRITICAL: Read IMPLEMENTATION_PLAN.md FIRST
+
+**BEFORE doing ANY work in this project:**
+
+1. Read `IMPLEMENTATION_PLAN.md` to see current tasks
+2. Execute ONLY the next pending task from that file
+3. Update `IMPLEMENTATION_PLAN.md` after completing the task
+4. DO NOT invent your own plan or tasks
+
+**If IMPLEMENTATION_PLAN.md is empty or unclear:**
+- Ask user to run: `./scripts/ralph.ps1 -Mode plan` (Windows)
+- Or: `./scripts/ralph.sh plan` (Linux/Mac)
+
 ## Validation Commands (Backpressure)
 
 Run these commands before marking any task complete:

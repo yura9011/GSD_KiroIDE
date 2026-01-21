@@ -74,7 +74,6 @@ function Test-Code {
         Write-Host "  - ESLint: ✗ Not found"
     }
     
-    Write-Host "  - PyLint: $(if ($hasPylint) { '✓ Found' } else { '✗ Not found' })"
     Write-Host ""
     
     # JavaScript/TypeScript validation
@@ -128,42 +127,38 @@ function Test-Code {
     $pyFiles = Get-ChildItem -Recurse -Include *.py | Where-Object { $_.FullName -notmatch "__pycache__" } | Select-Object -First 20
     if ($pyFiles) {
         Write-Host "Found $($pyFiles.Count) Python files to validate..."
-        if ($hasPylint) {
-            Write-Host "Running PyLint validation..."
-            try {
-                $pyFilePaths = $pyFiles | ForEach-Object { $_.FullName }
-                pylint @pyFilePaths 2>$null
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host "${Green}✓${Reset} PyLint validation passed"
-                } else {
-                    Write-Host "${Red}✗${Reset} PyLint validation failed"
-                    $codeErrors++
-                }
-            } catch {
-                Write-Host "${Red}✗${Reset} PyLint validation failed"
-                $codeErrors++
-            }
-        } elseif ($hasPython) {
-            Write-Host "PyLint not available, using basic Python syntax check..."
+        
+        # Always use basic Python syntax check (fast and reliable)
+        if ($hasPython) {
+            Write-Host "Running Python syntax validation..."
             $current = 0
             foreach ($file in $pyFiles) {
                 $current++
                 Write-Host "  [$current/$($pyFiles.Count)] Checking $($file.Name)..."
                 try {
-                    python -m py_compile $file.FullName 2>$null
+                    $output = python -m py_compile $file.FullName 2>&1
                     if ($LASTEXITCODE -eq 0) {
                         Write-Host "    ${Green}✓${Reset} OK"
                     } else {
                         Write-Host "    ${Red}✗${Reset} Syntax error"
+                        if ($output) {
+                            Write-Host "    $output"
+                        }
                         $codeErrors++
                     }
                 } catch {
-                    Write-Host "    ${Red}✗${Reset} Syntax error"
+                    Write-Host "    ${Red}✗${Reset} Syntax error: $($_.Exception.Message)"
                     $codeErrors++
                 }
             }
+            
+            # Suggest PyLint for deeper analysis
+            if ($hasPylint) {
+                Write-Host ""
+                Write-Host "${Blue}ℹ${Reset} PyLint is available. Run 'pylint <file>' manually for detailed code quality checks."
+            }
         } else {
-            Write-Host "${Yellow}⚠${Reset} No Python validation tools available (skipping)"
+            Write-Host "${Yellow}⚠${Reset} Python not found (skipping)"
         }
     } else {
         Write-Host "No Python files found (skipping)"

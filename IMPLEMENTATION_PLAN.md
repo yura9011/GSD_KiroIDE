@@ -47,6 +47,15 @@
 
 ## Current Tasks
 
+### Recently Completed
+
+- [x] **Agent Discipline Protocol** (2026-01-21)
+  - Problem: Agents can "go rogue" and invent their own plans
+  - Solution: Three-layer defense (AGENTS.md, PROMPT files, user discipline)
+  - Created: `.gsd/protocols/agent-discipline.md`
+  - Updated: AGENTS.md, PROMPT_build.md, PROMPT_plan.md, README.md
+  - Fixed: validate.ps1 PyLint hanging issue
+
 ### No Active Tasks
 
 All planned work for gsd-universal milestone is complete.
@@ -110,7 +119,20 @@ All planned work for gsd-universal milestone is complete.
   - **Status**: Resolved - fully universal implementation
 
 ### Active
-- **None**: All known issues resolved
+- **Issue**: Agents can "go rogue" and ignore IMPLEMENTATION_PLAN.md
+  - **Cause**: Agents are trained to be autonomous and helpful
+  - **Solution**: Three-layer defense system (universal, no IDE dependencies)
+    1. AGENTS.md with CRITICAL section at top
+    2. PROMPT files with explicit "STOP" instructions
+    3. User discipline (use scripts, verify first action)
+  - **Status**: Resolved - documented in `.gsd/protocols/agent-discipline.md`
+  - **Prevention**: Always use ralph scripts, copy full prompt, verify agent reads plan first
+
+- **Issue**: validate.ps1 hangs at PyLint validation
+  - **Cause**: PyLint can be very slow and provides no progress output
+  - **Solution**: Use basic Python syntax check instead, suggest PyLint for manual use
+  - **Status**: Resolved - validate.ps1 now uses fast `python -m py_compile`
+  - **Impact**: Validation completes quickly with clear progress output
 
 ### Future Considerations
 - **Enhancement**: Test indexing scripts on large codebases (10k+ files)
