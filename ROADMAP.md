@@ -5,21 +5,22 @@
 
 ## Must-Haves
 
-- [ ] Universal validation protocol (no IDE-specific dependencies)
-- [ ] Generic subagent/parallel processing pattern
-- [ ] IDE-agnostic file structure and conventions
-- [ ] Cross-IDE workflow compatibility
+- [x] Universal validation protocol (no IDE-specific dependencies)
+- [x] Generic subagent/parallel processing pattern
+- [x] IDE-agnostic file structure and conventions
 - [ ] Universal Ralph Loop (protocol-based, not CLI-based)
-- [ ] Adapter system for IDE-specific optimizations
+- [ ] Cross-platform scripts (bash + PowerShell)
+- [ ] Works with any AI (ChatGPT, Claude, Gemini, local models)
+- [ ] Terminal + IDE compatibility
 - [ ] Backward compatibility with existing GSD projects
-- [ ] Multi-IDE documentation and examples
+- [ ] Multi-environment documentation and examples
 
 ## Nice-to-Haves
 
-- [ ] GSD Universal CLI for non-IDE environments
+- [ ] IDE-specific adapters (Kiro, Antigravity, VS Code)
+- [ ] Performance optimizations for specific tools
 - [ ] Browser-based GSD interface
 - [ ] Community plugin ecosystem
-- [ ] Integration with traditional code editors
 - [ ] GSD Universal marketplace/registry
 
 ## Phases
@@ -35,25 +36,27 @@
 - ✅ Universal workflow definitions
 - ✅ Universal environment setup guide
 
-### Phase 2: Adapter System Design
+### Phase 2: Universal Ralph Loop
 **Status**: ⬜ Not Started  
-**Objective**: Create IDE-specific adapters that implement universal protocol
-
-**Key Deliverables:**
-- Adapter interface specification
-- Kiro adapter (maintains current functionality)
-- Claude Code adapter
-- Generic IDE adapter (fallback)
-
-### Phase 3: Ralph Universal Protocol
-**Status**: ⬜ Not Started
 **Objective**: Transform Ralph Loop into pure protocol-based system
 
 **Key Deliverables:**
 - Protocol-based Ralph (no external CLI dependencies)
-- Self-executing within IDE context
-- Universal prompt templates
-- Cross-IDE compatibility validation
+- Self-executing within any environment (IDE or terminal)
+- Universal prompt templates (work with any AI)
+- Cross-platform scripts (bash + PowerShell)
+- File-based state management
+
+### Phase 3: Validation & Testing
+**Status**: ⬜ Not Started
+**Objective**: Prove GSD works in any environment with any AI
+
+**Key Deliverables:**
+- Terminal + web chat testing (ChatGPT, Claude)
+- Multiple editor + AI combinations (VS Code, Kiro, Antigravity)
+- Cross-platform validation (Windows, Mac, Linux)
+- Performance benchmarking
+- Real-world usage scenarios
 
 ### Phase 4: Documentation & Migration
 **Status**: ⬜ Not Started
@@ -65,15 +68,18 @@
 - Multi-IDE setup tutorials
 - Community adoption toolkit
 
-### Phase 5: Community & Ecosystem
+### Phase 5: Optional Optimizations
 **Status**: ⬜ Not Started
-**Objective**: Establish GSD Universal as the industry standard
+**Objective**: Add optional IDE-specific enhancements (non-critical)
 
 **Key Deliverables:**
-- Community governance model
-- Plugin/extension ecosystem framework
-- Integration partnerships with IDE vendors
-- Adoption metrics and feedback systems
+- Adapter system design (optional)
+- Kiro optimization layer (optional)
+- Antigravity integration helpers (optional)
+- VS Code + Copilot shortcuts (optional)
+- Performance optimizations when tools available
+
+**Note:** These are nice-to-haves. GSD Universal works without them.
 
 ## Timeline
 
