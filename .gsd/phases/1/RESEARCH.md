@@ -49,46 +49,71 @@ done
 
 **Recommendation:** Implement the pure Ralph approach - simple loop with fresh context, not complex orchestration.
 
-### Essential Files and Their Exact Purposes
+### Essential Files and Their Exact Purposes (CORRECTED)
 
-**Core Files (From Original Ralph):**
-- `PROMPT.md` - Single prompt file fed to AI each iteration
-- `AGENTS.md` - Project conventions and "signs" (60 lines max, operational only)
-- `specs/*` - Specification files, one per feature/component
-- `fix_plan.md` - Dynamic task tracker (NOT implementation plan - this is key difference)
+**Core Files (From Original Ralph Repository):**
+- `PROMPT.md` - Single prompt file OR mode-specific prompts
+- `PROMPT_plan.md` - Planning mode: generates/updates IMPLEMENTATION_PLAN.md
+- `PROMPT_build.md` - Building mode: implements from IMPLEMENTATION_PLAN.md
+- `AGENTS.md` - Project conventions and backpressure commands (60 lines max)
+- `specs/*` - Specification files, one per topic of concern
+- `IMPLEMENTATION_PLAN.md` - Dynamic task tracker (NOT fix_plan.md as I initially thought)
 
-**Advanced Files (Two-Mode Approach):**
-- `PROMPT_plan.md` - Planning mode: reads all specs, generates/updates fix_plan.md
-- `PROMPT_build.md` - Building mode: reads fix_plan.md, implements one item
-
-**Critical Distinctions:**
-- **specs/***: Static requirements (what should be built)
-- **fix_plan.md**: Dynamic task list (what needs to be done right now)
-- **AGENTS.md**: Operational commands only, NOT status/progress
-- **Fresh Context**: Each iteration re-reads ALL files from disk
-
-**File Naming Matters:**
-- Original uses `fix_plan.md` not `IMPLEMENTATION_PLAN.md`
-- Original uses single `PROMPT.md` for simple cases
-- Two-mode approach uses `PROMPT_plan.md` and `PROMPT_build.md`
-
-**Sources:**
-- Geoffrey Huntley's original repository structure
-- CURSED project file organization
-- Multiple implementation examples analyzed
-
-**Recommendation:** Follow exact original naming and structure for compatibility with existing Ralph ecosystem.
-
-### Loop Mechanics - The Exact Process
-
-**The Pure Ralph Loop (Original):**
-```bash
-while true; do
-  cat PROMPT.md | claude -p --dangerously-skip-permissions
-done
+**Exact Prompt Structure (From Repository):**
+```
+Phase 0 (0a, 0b, 0c) - Orient: study specs, source location, current plan
+Phase 1-4 - Main instructions: task, validation, commit  
+999... numbering - Guardrails/invariants (higher number = more critical)
 ```
 
-**Enhanced Loop (With Safety Features):**
+**PROMPT_build.md Template (Exact from Repository):**
+```markdown
+0a. Study `specs/*` with up to 500 parallel Sonnet subagents to learn the application specifications.
+0b. Study @IMPLEMENTATION_PLAN.md.
+0c. For reference, the application source code is in `src/*`.
+
+1. Your task is to implement functionality per the specifications using parallel subagents. Follow @IMPLEMENTATION_PLAN.md and choose the most important item to address. Before making changes, search the codebase (don't assume not implemented) using Sonnet subagents. You may use up to 500 parallel Sonnet subagents for searches/reads and only 1 Sonnet subagent for build/tests. Use Opus subagents when complex reasoning is needed (debugging, architectural decisions).
+
+2. After implementing functionality or resolving problems, run the tests for that unit of code that was improved. If functionality is missing then it's your job to add it as per the application specifications. Ultrathink.
+
+3. When you discover issues, immediately update @IMPLEMENTATION_PLAN.md with your findings using a subagent. When resolved, update and remove the item.
+
+4. When the tests pass, update @IMPLEMENTATION_PLAN.md, then `git add -A` then `git commit` with a message describing the changes. After the commit, `git push`.
+
+99999. Important: When authoring documentation, capture the why — tests and implementation importance.
+999999. Important: Single sources of truth, no migrations/adapters. If tests unrelated to your work fail, resolve them as part of the increment.
+9999999. As soon as there are no build or test errors create a git tag. If there are no git tags start at 0.0.0 and increment patch by 1 for example 0.0.1 if 0.0.0 does not exist.
+99999999. You may add extra logging if required to debug issues.
+999999999. Keep @IMPLEMENTATION_PLAN.md current with learnings using a subagent — future work depends on this to avoid duplicating efforts. Update especially after finishing your turn.
+9999999999. When you learn something new about how to run the application, update @AGENTS.md using a subagent but keep it brief. For example if you run commands multiple times before learning the correct command then that file should be updated.
+99999999999. For any bugs you notice, resolve them or document them in @IMPLEMENTATION_PLAN.md using a subagent even if it is unrelated to the current piece of work.
+999999999999. Implement functionality completely. Placeholders and stubs waste efforts and time redoing the same work.
+9999999999999. When @IMPLEMENTATION_PLAN.md becomes large periodically clean out the items that are completed from the file using a subagent.
+99999999999999. If you find inconsistencies in the specs/* then use an Opus 4.5 subagent with 'ultrathink' requested to update the specs.
+999999999999999. IMPORTANT: Keep @AGENTS.md operational only — status updates and progress notes belong in `IMPLEMENTATION_PLAN.md`. A bloated AGENTS.md pollutes every future loop's context.
+```
+
+**AGENTS.md Structure (Exact Purpose):**
+- Single, canonical "heart of the loop"
+- Concise, operational "how to run/build" guide
+- Contains project-specific commands for backpressure validation
+- Status, progress, and planning belong in IMPLEMENTATION_PLAN.md, NOT here
+- Enables "loopback" - immediate self-evaluation within same loop
+
+**Sources:**
+- https://github.com/ghuntley/how-to-ralph-wiggum (Direct repository analysis)
+- Exact templates and structures from Geoffrey Huntley's implementation
+
+**Recommendation:** Use EXACT naming and structure from original repository for compatibility.
+
+### Loop Mechanics - The Exact Implementation (CORRECTED)
+
+**Geoff's Initial Minimal Loop (From Repository):**
+```bash
+while :; do cat PROMPT.md | claude-code ; done
+```
+
+**Enhanced Loop Example (From Repository):**
 ```bash
 #!/bin/bash
 MODE="build"  # or "plan"
@@ -99,39 +124,45 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   echo "--- Iteration $i ---"
   cat "$PROMPT_FILE" | claude -p --dangerously-skip-permissions --model opus
   
-  # Check for completion signal
-  if grep -q "COMPLETE" output.log; then
-    echo "Task completed!"
-    break
-  fi
-  
   # Auto-push after each iteration
   git push origin $(git branch --show-current)
   sleep 2
 done
 ```
 
-**What Happens Each Iteration:**
-1. **Fresh Start**: New Claude session, clean context window
-2. **File Loading**: AI reads PROMPT.md, AGENTS.md, specs/*, fix_plan.md from disk
-3. **Decision**: AI picks most important item from fix_plan.md
-4. **Implementation**: AI makes changes, runs tests (backpressure)
-5. **Update**: AI updates fix_plan.md with progress
-6. **Commit**: AI creates atomic git commit
-7. **Exit**: Session ends, loop restarts immediately
+**What Controls Task Continuation (Exact Mechanism):**
+1. **Bash loop runs** → feeds PROMPT.md to claude
+2. **PROMPT.md instructs** → "Study IMPLEMENTATION_PLAN.md and choose the most important thing"
+3. **Agent completes one task** → updates IMPLEMENTATION_PLAN.md on disk, commits, exits
+4. **Bash loop restarts immediately** → fresh context window
+5. **Agent reads updated plan** → picks next most important thing
 
-**Critical Success Factors:**
-- **One Item Per Iteration**: Never try to do multiple things
-- **Fresh Context**: No memory between iterations except files
-- **Backpressure**: Must validate before marking complete
-- **Atomic Commits**: Each iteration = one commit
+**Key Insight from Repository:**
+"The IMPLEMENTATION_PLAN.md file persists on disk between iterations and acts as shared state between otherwise isolated loop executions. Each iteration deterministically loads the same files (PROMPT.md + AGENTS.md + specs/*) and reads the current state from disk."
+
+**Building Mode Loop Lifecycle (Exact from Repository):**
+1. **Orient** – subagents study specs/* (requirements)
+2. **Read plan** – study IMPLEMENTATION_PLAN.md
+3. **Select** – pick the most important task
+4. **Investigate** – subagents study relevant /src ("don't assume not implemented")
+5. **Implement** – N subagents for file operations
+6. **Validate** – 1 subagent for build/tests (backpressure)
+7. **Update IMPLEMENTATION_PLAN.md** – mark task done, note discoveries/bugs
+8. **Update AGENTS.md** – if operational learnings
+9. **Commit**
+10. **Loop ends** → context cleared → next iteration starts fresh
+
+**Critical Success Factors (From Repository Analysis):**
+- **No sophisticated orchestration needed** - just a dumb bash loop
+- **Agent figures out what to do next** by reading the plan file each time
+- **Fresh context per iteration** prevents context rot
+- **Deterministic file loading** each iteration
 
 **Sources:**
-- Geoffrey Huntley's original loop.sh implementations
-- Multiple production Ralph setups analyzed
-- Anthropic's research on long-running agents
+- Direct analysis of https://github.com/ghuntley/how-to-ralph-wiggum
+- Geoffrey Huntley's exact loop mechanics documentation
 
-**Recommendation:** Start with pure Ralph loop, add safety features incrementally.
+**Recommendation:** Implement exact repository patterns, not my initial interpretations.
 
 ### Integration Strategy with GSD Framework
 
@@ -393,34 +424,46 @@ Ralph will fail predictably. When it does:
 - Maintain compatibility with manual workflows
 - Gradual adoption path
 
-## Implementation Strategy - Exact Replication Approach
+## Implementation Strategy - Exact Replication Approach (CORRECTED)
 
-### Phase 1: Pure Ralph Implementation
-1. **Core Loop**: Implement exact Geoffrey Huntley loop.sh pattern
-2. **File Structure**: Use original Ralph naming (PROMPT.md, AGENTS.md, specs/*, fix_plan.md)
-3. **GSD Adaptation**: Map GSD concepts to Ralph structure without changing Ralph's core
-4. **Validation Integration**: Use `./scripts/validate-all.sh` as backpressure mechanism
-5. **Testing**: Verify with simple tasks before complex workflows
+### Phase 1: Pure Ralph Implementation (Following Exact Repository Patterns)
+1. **Core Loop**: Implement Geoffrey Huntley's exact loop.sh pattern from repository
+2. **File Structure**: Use exact original naming (PROMPT_plan.md, PROMPT_build.md, AGENTS.md, IMPLEMENTATION_PLAN.md, specs/*)
+3. **Prompt Templates**: Copy exact templates with 999... guardrail numbering system
+4. **Subagent Patterns**: Follow exact patterns (500 Sonnet, 1 for build/tests, Opus for reasoning)
+5. **GSD Integration**: Map GSD concepts to Ralph structure without changing Ralph's core
 
-### Exact File Mapping Strategy
+### Exact File Mapping Strategy (CORRECTED)
 ```
-Ralph Original          GSD Integration
-├── PROMPT.md      →   ├── PROMPT.md (GSD-aware instructions)
-├── AGENTS.md      →   ├── AGENTS.md (GSD validation commands)
-├── specs/         →   ├── specs/ (from ROADMAP.md phases)
-├── fix_plan.md    →   ├── fix_plan.md (from ROADMAP.md tasks)
-└── loop.sh        →   └── loop.sh (with GSD enhancements)
+Ralph Original (Repository)    GSD Integration
+├── PROMPT_plan.md        →   ├── PROMPT_plan.md (GSD planning mode)
+├── PROMPT_build.md       →   ├── PROMPT_build.md (GSD execution mode)
+├── AGENTS.md             →   ├── AGENTS.md (GSD validation commands)
+├── specs/                →   ├── specs/ (from ROADMAP.md phases)
+├── IMPLEMENTATION_PLAN.md →  ├── IMPLEMENTATION_PLAN.md (from ROADMAP.md tasks)
+└── loop.sh               →   └── loop.sh (with GSD validation integration)
 ```
 
-### Success Criteria for Phase 1
-- [ ] Pure Ralph loop executes autonomous iterations
-- [ ] Fresh context per iteration verified
-- [ ] AGENTS.md under 60 lines, operational only
-- [ ] fix_plan.md updates automatically during execution
+### Critical Corrections from Repository Analysis
+- **File naming**: `IMPLEMENTATION_PLAN.md` NOT `fix_plan.md`
+- **Prompt structure**: Exact 999... numbering system for guardrails
+- **Subagent limits**: Specific numbers (500 Sonnet, 1 build/test, Opus for complex reasoning)
+- **AGENTS.md purpose**: Operational commands for backpressure, NOT status tracking
+- **Loop mechanics**: Exact bash patterns from repository
+
+### Success Criteria for Phase 1 (UPDATED)
+- [ ] Exact Ralph loop from repository executes autonomous iterations
+- [ ] PROMPT_plan.md and PROMPT_build.md templates match repository exactly
+- [ ] AGENTS.md under 60 lines, contains only operational commands
+- [ ] IMPLEMENTATION_PLAN.md updates automatically during execution
+- [ ] Guardrail numbering system (999...) implemented correctly
+- [ ] Subagent patterns follow repository specifications
 - [ ] Backpressure validation prevents bad completions
 - [ ] Atomic commits created per task
-- [ ] Cross-platform compatibility (bash + PowerShell)
-- [ ] Integration with existing GSD validation scripts
+- [ ] Integration with existing GSD validation scripts (`./scripts/validate-all.sh`)
+
+### Key Insight from Deep Repository Analysis
+Ralph is simpler than I initially thought, but the details matter enormously. The exact prompt structure, file naming, and guardrail system are what make it work reliably. My initial research captured the philosophy but missed the precise implementation patterns that Geoffrey Huntley developed through extensive testing.
 
 ## Ready for Planning
 
@@ -432,8 +475,31 @@ Ralph Original          GSD Integration
 - [x] Risk mitigation strategies identified
 - [x] Implementation approach selected (autonomous execution with context hygiene)
 
-## Next Steps
+## Research Validation and Next Steps
 
-The research is complete and comprehensive. Ready to proceed with `/plan 1` to create detailed execution plans for implementing the Core Ralph Engine.
+### Research Completeness Verification
+- [x] **Core Concept**: Pure Ralph Loop understood (simple bash loop, fresh context)
+- [x] **Original Implementation**: Geoffrey Huntley's exact patterns analyzed
+- [x] **File Structure**: Original naming and purposes documented
+- [x] **Loop Mechanics**: Exact iteration process mapped
+- [x] **Backpressure System**: Quality control mechanisms understood
+- [x] **Real-World Evidence**: Success cases documented (CURSED, $50k contract, YC hackathon)
+- [x] **Integration Strategy**: How to adapt GSD without breaking Ralph's core
+- [x] **Anti-Patterns**: What breaks Ralph identified
+- [x] **Cross-Platform**: Implementation requirements clarified
 
-Key insight: Ralph Loop is not just "a loop that codes" - it's a complete paradigm shift from conversational AI to autonomous AI execution, with sophisticated context management and quality control mechanisms that align perfectly with GSD's empirical validation principles.
+### Key Insight Validation
+Ralph Loop is NOT complex orchestration. It's deliberately simple:
+- **Core**: `while true; do cat PROMPT.md | claude; done`
+- **Power**: Fresh context + file persistence + backpressure validation
+- **Philosophy**: "Deterministically bad in an undeterministic world" - eventual consistency through iteration
+
+### Ready for Implementation Planning
+The research provides complete understanding of:
+1. **What Ralph is**: Simple autonomous loop with fresh context
+2. **How to replicate it**: Exact file structure and loop mechanics
+3. **How to integrate with GSD**: Ralph as execution engine, not replacement
+4. **Success patterns**: Proven approaches from real implementations
+
+### Next Steps
+Ready to proceed with `/plan 1` to create detailed execution plans that implement the pure Ralph Loop approach within our GSD framework, maintaining Ralph's core simplicity while leveraging GSD's validation infrastructure.
